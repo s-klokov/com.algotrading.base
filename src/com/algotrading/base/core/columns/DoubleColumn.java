@@ -1,0 +1,183 @@
+package com.algotrading.base.core.columns;
+
+public class DoubleColumn extends AbstractColumn {
+
+    private static final double[] EMPTY = new double[0];
+    protected double[] data;
+
+    public DoubleColumn(final String name) {
+        super(name);
+        data = EMPTY;
+    }
+
+    public DoubleColumn(final String name, final int length) {
+        super(name, length);
+        data = new double[length];
+    }
+
+    public void set(final int index, final double value) {
+        rangeCheck(index);
+        data[index] = value;
+    }
+
+    public double get(final int index) {
+        rangeCheck(index);
+        return data[index];
+    }
+
+    public double getLast() {
+        return get(length() - 1);
+    }
+
+    public void append(final double value) {
+        ensureCapacity(length + 1);
+        data[length] = value;
+        length++;
+    }
+
+    @Override
+    public void ensureCapacity(final int capacity) {
+        if (data.length < capacity) {
+            final double[] newData = new double[Math.max(DEFAULT_SIZE, Math.max(data.length + data.length / 2, capacity))];
+            System.arraycopy(data, 0, newData, 0, data.length);
+            data = newData;
+        }
+    }
+
+    @Override
+    public boolean hasSameTypeAs(final AbstractColumn column) {
+        return column instanceof DoubleColumn;
+    }
+
+    @Override
+    public DoubleColumn copy() {
+        return copy(0, length());
+    }
+
+    @Override
+    public DoubleColumn copy(final int from, final int to) {
+        final DoubleColumn copy = new DoubleColumn(name(), to - from);
+        System.arraycopy(data, from, copy.data, 0, to - from);
+        return copy;
+    }
+
+    @Override
+    public DoubleColumn subColumn(final int[] indices) {
+        final DoubleColumn subColumn = new DoubleColumn(name(), indices.length);
+        for (int i = 0; i < indices.length; i++) {
+            subColumn.set(i, data[indices[i]]);
+        }
+        return subColumn;
+    }
+
+    @Override
+    public DoubleColumn append(final AbstractColumn column) {
+        final DoubleColumn doubleColumn = (DoubleColumn) column;
+        ensureCapacity(length + doubleColumn.length);
+        System.arraycopy(doubleColumn.data, 0, data, length, doubleColumn.length);
+        length += doubleColumn.length;
+        return this;
+    }
+
+    @Override
+    public void move(final int offset) {
+        if (offset > 0) {
+            System.arraycopy(data, 0, data, offset, data.length - offset);
+        } else if (offset < 0) {
+            System.arraycopy(data, -offset, data, 0, data.length + offset);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "double[" + length() + "] " + name();
+    }
+
+    public boolean isIncreasing() {
+        for (int index = 1; index < length; index++) {
+            if (get(index) <= get(index - 1)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isNonDecreasing() {
+        for (int index = 1; index < length; index++) {
+            if (get(index) < get(index - 1)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Предполагая, что колонка отсортирована по возрастанию, найти индекс данного элемента в колонке.
+     *
+     * @param v искомый элемент
+     * @return индекс, если элемент содержится в колонке, иначе <tt>(-(<i>insertion point</i>) - 1)</tt>.
+     * @see java.util.Arrays#binarySearch
+     */
+    public int binarySearch(final double v) {
+        int low = 0;
+        int high = length() - 1;
+        while (low <= high) {
+            final int mid = (low + high) >>> 1;
+            final double midVal = data[mid];
+
+            if (midVal < v) {
+                low = mid + 1;
+            } else if (midVal > v) {
+                high = mid - 1;
+            } else {
+                return mid;
+            }
+        }
+        return -(low + 1);
+    }
+
+    @Override
+    public void reorder(final int[] indices) {
+        super.reorder(indices);
+        final double[] newData = new double[data.length];
+        for (int i = 0; i < length; i++) {
+            newData[i] = data[indices[i]];
+        }
+        data = newData;
+    }
+
+    public double sum() {
+        double sum = 0;
+        for (int i = 0; i < length; i++) {
+            sum += data[i];
+        }
+        return sum;
+    }
+
+    public double average() {
+        if (length == 0) {
+            return Double.NaN;
+        }
+        double sum = 0;
+        for (int i = 0; i < length; i++) {
+            sum += data[i];
+        }
+        return sum / length;
+    }
+
+    public double max() {
+        double max = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < length; i++) {
+            max = Math.max(max, data[i]);
+        }
+        return max;
+    }
+
+    public double min() {
+        double min = Double.POSITIVE_INFINITY;
+        for (int i = 0; i < length; i++) {
+            min = Math.min(min, data[i]);
+        }
+        return min;
+    }
+}
