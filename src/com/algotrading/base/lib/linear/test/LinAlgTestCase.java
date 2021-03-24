@@ -1,4 +1,6 @@
-package com.algotrading.base.lib.linear;
+package com.algotrading.base.lib.linear.test;
+
+import com.algotrading.base.lib.linear.LinAlg;
 
 @SuppressWarnings({"MethodParameterNamingConvention", "LocalVariableNamingConvention"})
 public class LinAlgTestCase {
