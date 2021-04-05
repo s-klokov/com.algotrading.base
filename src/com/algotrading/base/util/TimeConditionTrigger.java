@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 /**
  * Проверка срабатывания условия в зависимости от текущего времени.
- * Предполагается, что метод {@link #isTriggered()} вызывается достаточно часто,
+ * Предполагается, что метод {@link #triggered()} вызывается достаточно часто,
  * чтобы не пропускать моменты срабатывания.
  * Если условие начало выполняться, то триггер срабатывает однократно.
  * Для последующего срабатывания триггера требуется, чтобы условие сначала перестало
@@ -84,7 +84,7 @@ public class TimeConditionTrigger {
     /**
      * @return {@code true}, если условие сработало, иначе {@code false}
      */
-    public boolean isTriggered() {
+    public boolean triggered() {
         final ZonedDateTime currDateTime = currentTimeSupplier.get();
         if (!currDateTime.isAfter(dateTime)) {
             return false;
@@ -108,9 +108,9 @@ public class TimeConditionTrigger {
 
     /**
      * @return триггер, срабатывающий каждую секунду
-     * (предполагается, что метод {@link #isTriggered()} вызывается достаточно часто)
+     * (предполагается, что метод {@link #triggered()} вызывается достаточно часто)
      */
-    public static TimeConditionTrigger getNewSecondTrigger() {
+    public static TimeConditionTrigger newNewSecondTrigger() {
         return new TimeConditionTrigger(
                 (prev, curr) -> prev.getSecond() != curr.getSecond() || prev.plusSeconds(5).isBefore(curr)
         );
@@ -118,9 +118,9 @@ public class TimeConditionTrigger {
 
     /**
      * @return триггер, срабатывающий каждую минуту
-     * (предполагается, что метод {@link #isTriggered()} вызывается достаточно часто)
+     * (предполагается, что метод {@link #triggered()} вызывается достаточно часто)
      */
-    public static TimeConditionTrigger getNewMinuteTrigger() {
+    public static TimeConditionTrigger newNewMinuteTrigger() {
         return new TimeConditionTrigger(
                 (prev, curr) -> prev.getMinute() != curr.getMinute() || prev.plusMinutes(5).isBefore(curr)
         );
@@ -130,9 +130,9 @@ public class TimeConditionTrigger {
      * @param sec1 секунда начала диапазона
      * @param sec2 секунда конца диапазона
      * @return триггер, срабатывающий при попадании в диапазон секунд от sec1 до sec2 включительно в рамках минуты
-     * (предполагается, что метод {@link #isTriggered()} вызывается достаточно часто)
+     * (предполагается, что метод {@link #triggered()} вызывается достаточно часто)
      */
-    public static TimeConditionTrigger getIntraMinuteTrigger(final int sec1, final int sec2) {
+    public static TimeConditionTrigger newIntraMinuteTrigger(final int sec1, final int sec2) {
         return new TimeConditionTrigger(
                 now -> {
                     final int sec = now.getSecond();
@@ -149,9 +149,9 @@ public class TimeConditionTrigger {
      * @param timeout величина задержки
      * @param unit    единица измерения
      * @return триггер, срабатывающий после указанной задержки
-     * (предполагается, что метод {@link #isTriggered()} вызывается достаточно часто)
+     * (предполагается, что метод {@link #triggered()} вызывается достаточно часто)
      */
-    public static TimeConditionTrigger getDelayTrigger(final long timeout, final ChronoUnit unit) {
+    public static TimeConditionTrigger newDelayTrigger(final long timeout, final ChronoUnit unit) {
         final ZonedDateTime deadline = ZonedDateTime.now().plus(timeout, unit);
         return new TimeConditionTrigger(now -> !now.isBefore(deadline));
     }
@@ -160,9 +160,9 @@ public class TimeConditionTrigger {
      * @param timeout величина задержки
      * @param unit    единица измерения
      * @return триггер, срабатывающий периодически после указанной задержки
-     * (предполагается, что метод {@link #isTriggered()} вызывается достаточно часто)
+     * (предполагается, что метод {@link #triggered()} вызывается достаточно часто)
      */
-    public static TimeConditionTrigger getPeriodicTrigger(final long timeout, final ChronoUnit unit) {
+    public static TimeConditionTrigger newPeriodicTrigger(final long timeout, final ChronoUnit unit) {
         final Value<ZonedDateTime> deadline = new Value<>(ZonedDateTime.now().plus(timeout, unit));
         return new TimeConditionTrigger(now -> {
             if (!now.isBefore(deadline.get())) {
