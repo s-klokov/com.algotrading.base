@@ -4,113 +4,114 @@ import com.algotrading.base.core.columns.DoubleColumn;
 import com.algotrading.base.core.series.Series;
 
 /**
- * Вычисление индикаторов HHV, LLV.
+ * Вычисление индикаторов HV (highest value), LV (lowest value).
  */
-public final class HhvLlv {
+public final class HvLv {
 
-    private HhvLlv() {
+    private HvLv() {
+        throw new UnsupportedOperationException();
     }
 
     /**
-     * Вычислить индикатор HHV.
+     * Вычислить индикатор HV (highest value).
      *
      * @param series          временной ряд
      * @param priceColumnName название колонки временного ряда, содержащей цены, по которым вычисляется индикатор
      * @param period          период
-     * @param hhvColumnName   имя колонки, куда будут записаны значения индикатора
+     * @param hvColumnName   имя колонки, куда будут записаны значения индикатора
      * @return колонка со значениями индикатора
      */
-    public static DoubleColumn hhv(final Series series,
-                                   final String priceColumnName,
-                                   final int period,
-                                   final String hhvColumnName) {
-        return hhv(series, series.getDoubleColumn(priceColumnName), period, hhvColumnName);
+    public static DoubleColumn hv(final Series series,
+                                  final String priceColumnName,
+                                  final int period,
+                                  final String hvColumnName) {
+        return hv(series, series.getDoubleColumn(priceColumnName), period, hvColumnName);
     }
 
     /**
-     * Вычислить индикатор HHV.
+     * Вычислить индикатор HV (highest value).
      *
      * @param series        временной ряд
      * @param priceColumn   колонка временного ряда, содержащая цены, по которым вычисляется индикатор
      * @param period        период
-     * @param hhvColumnName имя колонки, куда будут записаны значения индикатора
+     * @param hvColumnName имя колонки, куда будут записаны значения индикатора
      * @return колонка со значениями индикатора
      */
-    public static DoubleColumn hhv(final Series series,
-                                   final DoubleColumn priceColumn,
-                                   final int period,
-                                   final String hhvColumnName) {
-        final DoubleColumn hhvColumn = series.acquireDoubleColumn(hhvColumnName);
-        final int len = hhvColumn.length();
+    public static DoubleColumn hv(final Series series,
+                                  final DoubleColumn priceColumn,
+                                  final int period,
+                                  final String hvColumnName) {
+        final DoubleColumn hvColumn = series.acquireDoubleColumn(hvColumnName);
+        final int len = hvColumn.length();
         if (len == 0) {
-            return hhvColumn;
+            return hvColumn;
         }
-        double hhv = priceColumn.get(0);
+        double hv = priceColumn.get(0);
         int id = 0;
-        hhvColumn.set(0, hhv);
+        hvColumn.set(0, hv);
         for (int i = 1; i < len; i++) {
             final double p = priceColumn.get(i);
-            if (hhv <= p) {
-                hhv = p;
+            if (hv <= p) {
+                hv = p;
                 id = i;
             } else if (i - id >= period) {
                 id = maxId(priceColumn, Math.max(0, i - period + 1), i + 1);
-                hhv = priceColumn.get(id);
+                hv = priceColumn.get(id);
             }
-            hhvColumn.set(i, hhv);
+            hvColumn.set(i, hv);
         }
-        return hhvColumn;
+        return hvColumn;
     }
 
     /**
-     * Вычислить индикатор LLV.
+     * Вычислить индикатор LV (lowest value).
      *
      * @param series          временной ряд
      * @param priceColumnName название колонки временного ряда, содержащей цены, по которым вычисляется индикатор
      * @param period          период
-     * @param llvColumnName   имя колонки, куда будут записаны значения индикатора
+     * @param lvColumnName   имя колонки, куда будут записаны значения индикатора
      * @return колонка со значениями индикатора
      */
-    public static DoubleColumn llv(final Series series,
-                                   final String priceColumnName,
-                                   final int period,
-                                   final String llvColumnName) {
-        return llv(series, series.getDoubleColumn(priceColumnName), period, llvColumnName);
+    public static DoubleColumn lv(final Series series,
+                                  final String priceColumnName,
+                                  final int period,
+                                  final String lvColumnName) {
+        return lv(series, series.getDoubleColumn(priceColumnName), period, lvColumnName);
     }
 
     /**
-     * Вычислить индикатор LLV.
+     * Вычислить индикатор LV (lowest value).
      *
      * @param series        временной ряд
      * @param priceColumn   колонка временного ряда, содержащая цены, по которым вычисляется индикатор
      * @param period        период
-     * @param llvColumnName имя колонки, куда будут записаны значения индикатора
+     * @param lvColumnName имя колонки, куда будут записаны значения индикатора
      * @return колонка со значениями индикатора
      */
-    public static DoubleColumn llv(final Series series,
-                                   final DoubleColumn priceColumn,
-                                   final int period,
-                                   final String llvColumnName) {
-        final DoubleColumn llvColumn = series.acquireDoubleColumn(llvColumnName);
-        final int len = llvColumn.length();
+    public static DoubleColumn lv(final Series series,
+                                  final DoubleColumn priceColumn,
+                                  final int period,
+                                  final String lvColumnName) {
+        final DoubleColumn lvColumn = series.acquireDoubleColumn(lvColumnName);
+        final int len = lvColumn.length();
         if (len == 0) {
-            return llvColumn;
+            return lvColumn;
         }
-        double llv = priceColumn.get(0);
+        double lv = priceColumn.get(0);
         int id = 0;
-        llvColumn.set(0, llv);
+        lvColumn.set(0, lv);
         for (int i = 1; i < len; i++) {
             final double p = priceColumn.get(i);
-            if (llv >= p) {
-                llv = p;
+            if (lv >= p) {
+                lv = p;
                 id = i;
             } else if (i - id >= period) {
                 id = minId(priceColumn, Math.max(0, i - period + 1), i + 1);
-                llv = priceColumn.get(id);
+                lv = priceColumn.get(id);
             }
-            llvColumn.set(i, llv);
+            lvColumn.set(i, lv);
         }
-        return llvColumn;
+        return lvColumn;
     }
 
     private static int maxId(final DoubleColumn priceColumn, final int from, final int to) {

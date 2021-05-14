@@ -4,8 +4,8 @@ import com.algotrading.base.core.columns.DoubleColumn;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.window.WindowOfDouble;
 
-import static com.algotrading.base.core.indicators.HhvLlv.hhv;
-import static com.algotrading.base.core.indicators.HhvLlv.llv;
+import static com.algotrading.base.core.indicators.HvLv.hv;
+import static com.algotrading.base.core.indicators.HvLv.lv;
 
 /**
  * Вычисление индикатора CandlesArea, являющегося аппроксимацией площади свечного графика в окне терминала.
@@ -35,8 +35,8 @@ public final class CandlesArea {
                                            final String columnName,
                                            final String hhvColumnName, final String llvColumnName) {
         final DoubleColumn candlesAreaColumn = series.acquireDoubleColumn(columnName);
-        final DoubleColumn hhvColumn = hhv(series, series.high(), period, hhvColumnName);
-        final DoubleColumn llvColumn = llv(series, series.low(), period, llvColumnName);
+        final DoubleColumn hhvColumn = hv(series, series.high(), period, hhvColumnName);
+        final DoubleColumn llvColumn = lv(series, series.low(), period, llvColumnName);
         final DoubleColumn open = series.open();
         final DoubleColumn high = series.high();
         final DoubleColumn low = series.low();
