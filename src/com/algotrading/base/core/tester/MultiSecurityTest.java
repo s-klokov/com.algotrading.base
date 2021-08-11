@@ -393,15 +393,14 @@ public abstract class MultiSecurityTest {
         final int hhmm = TimeCodes.hhmm(t);
         for (final Map.Entry<String, FinSeries> entry : marketDataMap.entrySet()) {
             final String secCode = entry.getKey();
-            final String secPrefix = Futures.getPrefix(secCode);
-            if (secCode.equals(secPrefix)) { // не фьючерс
-                map.put(secPrefix, secCode);
+            if (!Futures.isFutures(secCode)) { // не фьючерс
+                map.put(secCode, secCode);
             } else { // фьючерс
-                if (!map.containsKey(secPrefix)) {
-                    final Futures f = Futures.byShortCode(secCode);
+                final Futures f = Futures.byShortCode(secCode);
+                if (!map.containsKey(f.prefix)) {
                     if (hhmm < hhmmSwitch && yyyymmdd <= f.oneDayBeforeExpiry
                         || hhmm >= hhmmSwitch && yyyymmdd < f.oneDayBeforeExpiry) {
-                        map.put(secPrefix, secCode);
+                        map.put(f.prefix, secCode);
                     }
                 }
             }

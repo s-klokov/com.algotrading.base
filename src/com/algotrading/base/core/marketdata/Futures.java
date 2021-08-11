@@ -928,7 +928,7 @@ public enum Futures {
         final char ch1 = secCode.charAt(len - 1);
         final char ch2 = secCode.charAt(len - 2);
         return '0' <= ch1 && ch1 <= '9'
-               && (FUT_LETTERS.indexOf(ch2) >= 0 || '0' <= ch2 && ch2 <= '9' && FUT_LETTERS.indexOf(len - 3) >= 0);
+               && (FUT_LETTERS.indexOf(ch2) >= 0 || '0' <= ch2 && ch2 <= '9' && FUT_LETTERS.indexOf(secCode.charAt(len - 3)) >= 0);
     }
 
     /**
