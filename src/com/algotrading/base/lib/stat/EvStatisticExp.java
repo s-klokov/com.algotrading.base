@@ -99,13 +99,12 @@ public class EvStatisticExp implements StatisticBase {
         if (q == ss.q) {
             sum = ss.sum + ss.qn * sum;
             num = ss.num + num;
-            qn *= ss.qn;
         } else {
             sum = ss.sum + ss.qn * (1.0 - q) / (1.0 - ss.q) * sum;
             num = ss.num + (int) ((num * Math.log(q)) / Math.log(ss.q));
             q = ss.q;
-            qn *= ss.qn;
         }
+        qn *= ss.qn;
     }
 
     /**

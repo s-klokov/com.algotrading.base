@@ -127,7 +127,7 @@ public final class WStatistic implements StatisticBase {
     }
 
     @Override
-    public final void read(final DataInputStream dis) throws IOException {
+    public void read(final DataInputStream dis) throws IOException {
         num = dis.readInt();
         sum = dis.readDouble();
         sum2 = dis.readDouble();

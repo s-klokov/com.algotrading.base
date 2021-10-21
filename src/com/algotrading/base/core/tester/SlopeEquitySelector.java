@@ -33,8 +33,7 @@ public class SlopeEquitySelector implements EquitySelector {
         }
         List<StringDouble> list = new ArrayList<>();
         for (final AbstractColumn column : equities.columns()) {
-            if (column instanceof DoubleColumn) {
-                final DoubleColumn equity = (DoubleColumn) column;
+            if (column instanceof final DoubleColumn equity) {
                 for (int i = 0; i < len; i++) {
                     y[i] = equity.get(from + i);
                 }

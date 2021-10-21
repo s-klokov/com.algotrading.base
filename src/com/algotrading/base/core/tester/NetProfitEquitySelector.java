@@ -31,8 +31,7 @@ public class NetProfitEquitySelector implements EquitySelector {
         String bestName = null;
         double bestNetProfit = 0;
         for (final AbstractColumn column : equities.columns()) {
-            if (column instanceof DoubleColumn) {
-                final DoubleColumn equity = (DoubleColumn) column;
+            if (column instanceof final DoubleColumn equity) {
                 final double offset = (from == 0) ? 0 : equity.get(from - 1);
                 final double netProfit = equity.get(to - 1) - offset;
                 if (bestNetProfit < netProfit) {
@@ -47,8 +46,7 @@ public class NetProfitEquitySelector implements EquitySelector {
     private Map<String, Double> selectTopEquities(final FinSeries equities, final int from, final int to) {
         List<StringDouble> list = new ArrayList<>();
         for (final AbstractColumn column : equities.columns()) {
-            if (column instanceof DoubleColumn) {
-                final DoubleColumn equity = (DoubleColumn) column;
+            if (column instanceof final DoubleColumn equity) {
                 final double offset = (from == 0) ? 0 : equity.get(from - 1);
                 final double netProfit = equity.get(to - 1) - offset;
                 if (netProfit > 0) {

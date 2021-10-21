@@ -188,7 +188,7 @@ public final class WStatisticExp implements StatisticBase {
     }
 
     @Override
-    public final void read(final DataInputStream dis) throws IOException {
+    public void read(final DataInputStream dis) throws IOException {
         q = dis.readDouble();
         num = dis.readInt();
         sum = dis.readDouble();

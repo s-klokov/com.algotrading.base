@@ -58,7 +58,7 @@ public final class Rsi {
                 if (delta >= 0) {
                     u += delta;
                 } else {
-                    d += -delta;
+                    d -= delta;
                 }
                 if (n == period) {
                     u /= period;
@@ -130,7 +130,7 @@ public final class Rsi {
             if (delta > 0) {
                 u += delta;
             } else if (delta < 0) {
-                d += -delta;
+                d -= delta;
             }
             if (w.isFull()) {
                 rsiColumn.set(i, (u + d <= 0) ? 50.0 : (100.0 * u / (u + d)));

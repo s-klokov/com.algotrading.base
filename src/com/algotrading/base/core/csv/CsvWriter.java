@@ -148,17 +148,17 @@ public class CsvWriter {
                 final int i = index;
                 columnActions.forEach(action -> action.accept(i));
                 sb.setLength(sb.length() - separator.length());
-                blockStringBuilder.append(sb.toString()).append("\r\n");
+                blockStringBuilder.append(sb).append("\r\n");
                 lines++;
                 if (lines >= blockSize) {
-                    ps.print(blockStringBuilder.toString());
+                    ps.print(blockStringBuilder);
                     blockStringBuilder.setLength(0);
                     lines = 0;
                 }
             }
         }
         if (lines > 0) {
-            ps.print(blockStringBuilder.toString());
+            ps.print(blockStringBuilder);
         }
     }
 }

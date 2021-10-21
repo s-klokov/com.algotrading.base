@@ -29,14 +29,14 @@ public final class PointValue {
         this(x, f.applyAsDouble(x));
     }
 
-    public final double evaluate(final ToDoubleFunction<double[]> f) {
+    public double evaluate(final ToDoubleFunction<double[]> f) {
         return value = f.applyAsDouble(x);
     }
 
     /**
      * @return координаты точки
      */
-    public final double[] x() {
+    public double[] x() {
         return Arrays.copyOf(x, x.length);
     }
 
@@ -44,14 +44,14 @@ public final class PointValue {
      * @param i номер координаты
      * @return значение координаты
      */
-    public final double x(final int i) {
+    public double x(final int i) {
         return x[i];
     }
 
     /**
      * @return значение функции в точке
      */
-    public final double value() {
+    public double value() {
         return value;
     }
 

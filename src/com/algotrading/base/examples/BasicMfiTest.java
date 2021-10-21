@@ -244,7 +244,6 @@ class BasicMfiTest extends SingleSecurityTest {
             if (position == 0) {
                 if (mfi <= bound1) {
                     position = -Math.round(capital / close.get(i));
-                    ;
                 } else if (mfi >= bound2) {
                     position = Math.round(capital / close.get(i));
                 }

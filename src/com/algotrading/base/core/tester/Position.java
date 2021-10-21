@@ -312,24 +312,21 @@ public class Position {
     private void movePrice(final long timeCode, final double price, final boolean hasGap, final List<TestOrder> ordersExecuted) {
         for (final Iterator<TestOrder> i = activeOrders.iterator(); i.hasNext(); ) {
             final TestOrder activeOrder = i.next();
-            if (activeOrder instanceof TestLimitOrder) {
-                final TestLimitOrder o = (TestLimitOrder) activeOrder;
+            if (activeOrder instanceof final TestLimitOrder o) {
                 if (crossed(o.price, currentPrice, price)) {
                     o.executionPrice = o.price;
                     appendOrder(timeCode, o.volume, o.executionPrice, o.commission, o.comment);
                     i.remove();
                     ordersExecuted.add(o);
                 }
-            } else if (activeOrder instanceof TestStopOrder) {
-                final TestStopOrder o = (TestStopOrder) activeOrder;
+            } else if (activeOrder instanceof final TestStopOrder o) {
                 if (o.volume > 0 && price >= o.price || o.volume < 0 && price <= o.price) {
                     o.executionPrice = hasGap ? price : o.price;
                     appendOrder(timeCode, o.volume, o.executionPrice, o.commission, o.comment);
                     i.remove();
                     ordersExecuted.add(o);
                 }
-            } else if (activeOrder instanceof TestTakeStopOrder) {
-                final TestTakeStopOrder o = (TestTakeStopOrder) activeOrder;
+            } else if (activeOrder instanceof final TestTakeStopOrder o) {
                 if (o.volume > 0 && price >= o.stopPrice || o.volume < 0 && price <= o.stopPrice) {
                     o.executionPrice = hasGap ? price : o.stopPrice;
                     o.type = TestTakeStopOrder.Type.StopLoss;

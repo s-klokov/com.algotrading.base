@@ -323,7 +323,6 @@ public class NNetData {
                 br.reset();
             } catch (final IOException e) {
                 br.close();
-                //noinspection IOResourceOpenedButNotSafelyClosed
                 br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
             }
             br.skip(Math.max(0L, file.length() - (long) samples.length * lineLength));

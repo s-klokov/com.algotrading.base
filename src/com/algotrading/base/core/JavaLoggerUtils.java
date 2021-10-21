@@ -29,17 +29,17 @@ public class JavaLoggerUtils {
                 final Throwable t = record.getThrown();
                 if (t == null) {
                     return String.format(Locale.US, "%tF %<tT.%<tL [%s] <Thread-%d> %s%n",
-                                         record.getMillis(),
-                                         record.getLevel(),
-                                         record.getThreadID(),
-                                         record.getMessage());
+                            record.getMillis(),
+                            record.getLevel(),
+                            record.getLongThreadID(),
+                            record.getMessage());
                 } else {
                     final StringBuilder sb = new StringBuilder();
                     sb.append(String.format(Locale.US, "%tF %<tT.%<tL [%s] <Thread-%d> %s%n",
-                                            record.getMillis(),
-                                            record.getLevel(),
-                                            record.getThreadID(),
-                                            record.getMessage()));
+                            record.getMillis(),
+                            record.getLevel(),
+                            record.getLongThreadID(),
+                            record.getMessage()));
                     for (final StackTraceElement ste : t.getStackTrace()) {
                         sb.append(ste.toString()).append("\r\n");
                     }
