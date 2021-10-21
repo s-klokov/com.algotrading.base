@@ -60,13 +60,6 @@ public class SlopeEquitySelector implements EquitySelector {
         return map;
     }
 
-    private static class StringDouble {
-        final String s;
-        final double d;
-
-        StringDouble(final String s, final double d) {
-            this.s = s;
-            this.d = d;
-        }
+    private record StringDouble(String s, double d) {
     }
 }

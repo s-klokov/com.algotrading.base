@@ -74,15 +74,6 @@ public final class StochasticOscillator {
         Ma.ma(series, columnNameK, maD, columnNameD);
     }
 
-    private static class HLC {
-        final double h;
-        final double l;
-        final double c;
-
-        HLC(final double h, final double l, final double c) {
-            this.h = h;
-            this.l = l;
-            this.c = c;
-        }
+    private record HLC(double h, double l, double c) {
     }
 }
