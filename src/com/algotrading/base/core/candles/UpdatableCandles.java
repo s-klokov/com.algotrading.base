@@ -5,13 +5,13 @@ import com.algotrading.base.core.columns.ColumnUpdater;
 import com.algotrading.base.core.columns.DoubleColumn;
 import com.algotrading.base.core.columns.LongColumn;
 import com.algotrading.base.core.series.FinSeries;
-import com.algotrading.base.core.series.LongToLongFunction;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.LongPredicate;
+import java.util.function.LongUnaryOperator;
 
 /**
  * Реализация обновляемых свечей.
@@ -35,7 +35,7 @@ public class UpdatableCandles {
     /**
      * Функция для реализации временного сдвига.
      */
-    public final LongToLongFunction timeShift;
+    public final LongUnaryOperator timeShift;
     /**
      * Функция для фильтрации свечей по времени.
      */
@@ -78,7 +78,7 @@ public class UpdatableCandles {
      * @param truncationSize граница количества свечей для урезания временного ряда
      * @param targetSize     количество свечей после урезация временного ряда
      */
-    public UpdatableCandles(final LongToLongFunction timeShift,
+    public UpdatableCandles(final LongUnaryOperator timeShift,
                             final LongPredicate timeFilter,
                             final int period, final TimeUnit unit,
                             final int truncationSize,
@@ -120,7 +120,7 @@ public class UpdatableCandles {
      */
     public int update(FinSeries newSeries, final boolean shiftFilterCompress) {
         if (shiftFilterCompress) {
-            final LongToLongFunction timeFrameStartFunction = timeCode -> TimeCodes.getTimeFrameStart(timeCode, period, unit);
+            final LongUnaryOperator timeFrameStartFunction = timeCode -> TimeCodes.getTimeFrameStart(timeCode, period, unit);
             final LongColumn timeCode = series.timeCode();
             final int startIndex;
             if (timeCode.length() < 3) {
@@ -236,9 +236,9 @@ public class UpdatableCandles {
     }
 
     private static int getStartIndex(final LongColumn timeCode,
-                                     final LongToLongFunction timeShift,
+                                     final LongUnaryOperator timeShift,
                                      final LongPredicate timeFilter,
-                                     final LongToLongFunction timeFrameStartFunction,
+                                     final LongUnaryOperator timeFrameStartFunction,
                                      final long startValue) {
         final int len = timeCode.length();
         for (int i = 0; i < len; i++) {

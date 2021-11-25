@@ -8,6 +8,7 @@ import com.algotrading.base.core.values.AbstractValue;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.function.LongPredicate;
+import java.util.function.LongUnaryOperator;
 
 /**
  * Финансовый временной ряд -- это набор данных, состоящий из нескольких колонок, которые могут содержать
@@ -53,7 +54,7 @@ public class FinSeries extends Series {
     /**
      * Отсутствие сдвига по времени.
      */
-    public static final LongToLongFunction NO_TIME_SHIFT = t -> t;
+    public static final LongUnaryOperator NO_TIME_SHIFT = t -> t;
     /**
      * Отсутствие фильтрации по времени.
      */
@@ -164,9 +165,9 @@ public class FinSeries extends Series {
                 0);
     }
 
-    public FinSeries compressedCandles(final LongToLongFunction timeShift,
+    public FinSeries compressedCandles(final LongUnaryOperator timeShift,
                                        final LongPredicate timeFilter,
-                                       final LongToLongFunction timeFrameStartFunction,
+                                       final LongUnaryOperator timeFrameStartFunction,
                                        final int startIndex) {
         final LongColumn time = timeCode();
         final DoubleColumn open = open();
