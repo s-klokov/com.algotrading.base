@@ -11,6 +11,13 @@ public class TimeFilters {
     }
 
     /**
+     * Фильтр для включения утренней сессии и дневной сессии и исключения вечерней сессии.
+     */
+    public static final LongPredicate FILTER_0700_1845 = t -> {
+        final int hhmm = TimeCodes.hhmm(t);
+        return 700 <= hhmm && hhmm < 1845;
+    };
+    /**
      * Фильтр для акций: с 10:00 до 18:40 (дневная сессия без аукционов открытия и закрытия).
      */
     public static final LongPredicate FILTER_1000_1840 = t -> {
