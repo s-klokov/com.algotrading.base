@@ -11,8 +11,10 @@ import java.nio.charset.StandardCharsets;
  */
 public class SimpleLogger extends AbstractLogger {
 
+    /**
+     * Объект для синхронизации.
+     */
     protected final Object mutex = new Object();
-
     /**
      * Поток для вывода сообщений.
      */
@@ -64,8 +66,9 @@ public class SimpleLogger extends AbstractLogger {
 
     public void closeLogStream() {
         synchronized (mutex) {
-            if (logStream != null) {
+            if (logStream != null && logStream != System.out) {
                 logStream.close();
+                logStream = System.out;
             }
         }
     }
@@ -74,12 +77,13 @@ public class SimpleLogger extends AbstractLogger {
         synchronized (mutex) {
             if (errStream != null) {
                 errStream.close();
+                errStream = null;
             }
         }
     }
 
     @Override
-    public synchronized void close() {
+    public void close() {
         synchronized (mutex) {
             closeLogStream();
             closeErrStream();

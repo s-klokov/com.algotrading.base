@@ -4,6 +4,7 @@ import java.util.Formatter;
 import java.util.function.Supplier;
 
 public abstract class AbstractLogger {
+    /* Константы для уровней логгирования. */
     public static final int FATAL = 6;
     public static final int ERROR = 5;
     public static final int WARN = 4;
@@ -13,7 +14,7 @@ public abstract class AbstractLogger {
     /**
      * Уровень логгирования.
      */
-    protected volatile int logLevel = INFO;
+    protected volatile int logLevel = DEBUG;
     /**
      * Уровень логгирования для ошибок.
      */
