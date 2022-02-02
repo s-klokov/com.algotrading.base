@@ -12,7 +12,7 @@ import java.util.Objects;
  * Старые файлы перезаписываются новыми в процессе работы.
  */
 public class SevenDaysLogger extends AbstractLogger {
-    private static final String ERR_PRE_SUFFIX = "_error";
+    private static final String ERR = "_error";
     /**
      * Объект для синхронизации.
      */
@@ -79,7 +79,7 @@ public class SevenDaysLogger extends AbstractLogger {
             ensureLogStreamRotation();
             logStream.println(s);
             if (level >= errLevel) {
-                final String errorFileName = getFileName(ERR_PRE_SUFFIX);
+                final String errorFileName = getFileName(fileNamePrefix, ERR, fileNameSuffix);
                 try (final PrintStream errStream = new PrintStream(new FileOutputStream(errorFileName, true), true, StandardCharsets.UTF_8)) {
                     errStream.println(s);
                 } catch (final FileNotFoundException ignored) {
@@ -95,7 +95,7 @@ public class SevenDaysLogger extends AbstractLogger {
             logStream.println(s);
             thrown.printStackTrace(logStream);
             if (level >= errLevel) {
-                final String errorFileName = getFileName(ERR_PRE_SUFFIX);
+                final String errorFileName = getFileName(fileNamePrefix, ERR, fileNameSuffix);
                 try (final PrintStream errStream = new PrintStream(new FileOutputStream(errorFileName, true), true, StandardCharsets.UTF_8)) {
                     errStream.println(s);
                     thrown.printStackTrace(errStream);
@@ -105,8 +105,8 @@ public class SevenDaysLogger extends AbstractLogger {
         }
     }
 
-    private String getFileName(final String preSuffix) {
-        return String.format("%s%d%s%s", fileNamePrefix, ZonedDateTime.now().getDayOfWeek().getValue(), preSuffix, fileNameSuffix);
+    private static String getFileName(final String part1, final String part2, final String part3) {
+        return String.format("%s%s%d%s", part1, part2, ZonedDateTime.now().getDayOfWeek().getValue(), part3);
     }
 
     private static void removeFileIfOld(final String fileName) {
@@ -121,8 +121,8 @@ public class SevenDaysLogger extends AbstractLogger {
         if (!now.isBefore(deadline)) {
             deadline = now.plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
             close();
-            final String newLogFileName = getFileName("");
-            final String newErrFileName = getFileName(ERR_PRE_SUFFIX);
+            final String newLogFileName = getFileName(fileNamePrefix, "", fileNameSuffix);
+            final String newErrFileName = getFileName(fileNamePrefix, ERR, fileNameSuffix);
             removeFileIfOld(newLogFileName);
             removeFileIfOld(newErrFileName);
             try {
