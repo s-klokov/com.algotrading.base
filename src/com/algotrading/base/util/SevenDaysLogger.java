@@ -1,9 +1,6 @@
 package com.algotrading.base.util;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -11,10 +8,11 @@ import java.util.Objects;
 /**
  * Логгер, осуществляющий запись в ежедневные файлы лога и дублирующий сообщения об ошибках
  * в отдельные файлы с фрагментом "_error" в названии файла.
- * Ежедневные файлы в своём имени содержат дату в формате YYYYMMDD.
+ * Файлы лога в своём названии содержат номер дня недели в виде числа от 1 (понедельник) до 7 (воскресенье).
+ * Старые файлы перезаписываются новыми в процессе работы.
  */
-public class DailyLogger extends AbstractLogger {
-
+public class SevenDaysLogger extends AbstractLogger {
+    private static final String ERR_PRE_SUFFIX = "_error";
     /**
      * Объект для синхронизации.
      */
@@ -42,25 +40,25 @@ public class DailyLogger extends AbstractLogger {
      * @param fileNamePrefix префикс файлов лога
      * @param fileNameSuffix суффикс файлов лога
      */
-    public DailyLogger(final String fileNamePrefix, final String fileNameSuffix) {
+    public SevenDaysLogger(final String fileNamePrefix, final String fileNameSuffix) {
         this.fileNamePrefix = Objects.requireNonNull(fileNamePrefix);
         this.fileNameSuffix = Objects.requireNonNull(fileNameSuffix);
     }
 
     @Override
-    public DailyLogger withLogLevel(final int logLevel) {
+    public SevenDaysLogger withLogLevel(final int logLevel) {
         super.withLogLevel(logLevel);
         return this;
     }
 
     @Override
-    public DailyLogger withErrLevel(final int errLevel) {
+    public SevenDaysLogger withErrLevel(final int errLevel) {
         super.withErrLevel(errLevel);
         return this;
     }
 
     @Override
-    public DailyLogger withThreadNameEnabled(final boolean isThreadNameEnabled) {
+    public SevenDaysLogger withThreadNameEnabled(final boolean isThreadNameEnabled) {
         super.withThreadNameEnabled(isThreadNameEnabled);
         return this;
     }
@@ -81,7 +79,7 @@ public class DailyLogger extends AbstractLogger {
             ensureLogStreamRotation();
             logStream.println(s);
             if (level >= errLevel) {
-                final String errorFileName = getFileName("_error");
+                final String errorFileName = getFileName(ERR_PRE_SUFFIX);
                 try (final PrintStream errStream = new PrintStream(new FileOutputStream(errorFileName, true), true, StandardCharsets.UTF_8)) {
                     errStream.println(s);
                 } catch (final FileNotFoundException ignored) {
@@ -97,7 +95,7 @@ public class DailyLogger extends AbstractLogger {
             logStream.println(s);
             thrown.printStackTrace(logStream);
             if (level >= errLevel) {
-                final String errorFileName = getFileName("_error");
+                final String errorFileName = getFileName(ERR_PRE_SUFFIX);
                 try (final PrintStream errStream = new PrintStream(new FileOutputStream(errorFileName, true), true, StandardCharsets.UTF_8)) {
                     errStream.println(s);
                     thrown.printStackTrace(errStream);
@@ -108,18 +106,27 @@ public class DailyLogger extends AbstractLogger {
     }
 
     private String getFileName(final String preSuffix) {
-        return String.format("%s%tY%<tm%<td%s%s", fileNamePrefix, System.currentTimeMillis(), preSuffix, fileNameSuffix);
+        return String.format("%s%d%s%s", fileNamePrefix, ZonedDateTime.now().getDayOfWeek().getValue(), preSuffix, fileNameSuffix);
+    }
+
+    private static void removeFileIfOld(final String fileName) {
+        final File file = new File(fileName);
+        if (file.exists() && file.lastModified() < System.currentTimeMillis() - 5 * 24 * 60 * 60 * 1000) {
+            file.delete();
+        }
     }
 
     private void ensureLogStreamRotation() {
         final ZonedDateTime now = ZonedDateTime.now();
         if (!now.isBefore(deadline)) {
             deadline = now.plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
-            final String newFileName = getFileName("");
+            close();
+            final String newLogFileName = getFileName("");
+            final String newErrFileName = getFileName(ERR_PRE_SUFFIX);
+            removeFileIfOld(newLogFileName);
+            removeFileIfOld(newErrFileName);
             try {
-                final PrintStream ps = new PrintStream(new FileOutputStream(newFileName, true), true, StandardCharsets.UTF_8);
-                close();
-                logStream = ps;
+                logStream = new PrintStream(new FileOutputStream(newLogFileName, true), true, StandardCharsets.UTF_8);
             } catch (final IOException e) {
                 log(AbstractLogger.ERROR, "Cannot change log file", e);
             }
