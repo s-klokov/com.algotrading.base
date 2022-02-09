@@ -9,8 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 /**
- * Логгер, осуществляющий запись в ежедневные файлы лога и дублирующий сообщения об ошибках
- * в отдельные файлы с фрагментом "_error" в названии файла.
+ * Логгер, осуществляющий запись в ежедневные файлы лога и дублирующий сообщения об ошибках в отдельные файлы.
  * Ежедневные файлы в своём имени содержат дату в формате YYYYMMDD.
  */
 public class DailyLogger extends AbstractLogger {
@@ -20,13 +19,13 @@ public class DailyLogger extends AbstractLogger {
      */
     protected final Object mutex = new Object();
     /**
-     * Префикс имени файла лога.
+     * Шаблон имени файла лога, содержащий фрагмент "%d" для вставки даты в формате YYYYMMDD.
      */
-    protected final String fileNamePrefix;
+    protected final String logFileNameFormat;
     /**
-     * Суффикс имени файла лога.
+     * Шаблон имени файла с ошибками, содержащий фрагмент "%d" для вставки даты в формате YYYYMMDD.
      */
-    protected final String fileNameSuffix;
+    protected final String errFileNameFormat;
     /**
      * Время, после которого нужно произвести смену потока вывода лога.
      */
@@ -39,12 +38,12 @@ public class DailyLogger extends AbstractLogger {
     /**
      * Конструктор.
      *
-     * @param fileNamePrefix префикс файлов лога
-     * @param fileNameSuffix суффикс файлов лога
+     * @param logFileNameFormat шаблон имени файла лога, например: "example.%d.log"
+     * @param errFileNameFormat шаблон имени файла с ошибками, например: "example_error.%d.log"
      */
-    public DailyLogger(final String fileNamePrefix, final String fileNameSuffix) {
-        this.fileNamePrefix = Objects.requireNonNull(fileNamePrefix);
-        this.fileNameSuffix = Objects.requireNonNull(fileNameSuffix);
+    public DailyLogger(final String logFileNameFormat, final String errFileNameFormat) {
+        this.logFileNameFormat = Objects.requireNonNull(logFileNameFormat);
+        this.errFileNameFormat = Objects.requireNonNull(errFileNameFormat);
     }
 
     @Override
@@ -81,7 +80,7 @@ public class DailyLogger extends AbstractLogger {
             ensureLogStreamRotation();
             logStream.println(s);
             if (level >= errLevel) {
-                final String errorFileName = getFileName("_error");
+                final String errorFileName = getFileName(errFileNameFormat, ZonedDateTime.now());
                 try (final PrintStream errStream = new PrintStream(new FileOutputStream(errorFileName, true), true, StandardCharsets.UTF_8)) {
                     errStream.println(s);
                 } catch (final FileNotFoundException ignored) {
@@ -97,7 +96,7 @@ public class DailyLogger extends AbstractLogger {
             logStream.println(s);
             thrown.printStackTrace(logStream);
             if (level >= errLevel) {
-                final String errorFileName = getFileName("_error");
+                final String errorFileName = getFileName(errFileNameFormat, ZonedDateTime.now());
                 try (final PrintStream errStream = new PrintStream(new FileOutputStream(errorFileName, true), true, StandardCharsets.UTF_8)) {
                     errStream.println(s);
                     thrown.printStackTrace(errStream);
@@ -107,15 +106,11 @@ public class DailyLogger extends AbstractLogger {
         }
     }
 
-    private String getFileName(final String preSuffix) {
-        return String.format("%s%tY%<tm%<td%s%s", fileNamePrefix, System.currentTimeMillis(), preSuffix, fileNameSuffix);
-    }
-
     private void ensureLogStreamRotation() {
         final ZonedDateTime now = ZonedDateTime.now();
         if (!now.isBefore(deadline)) {
             deadline = now.plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
-            final String newFileName = getFileName("");
+            final String newFileName = getFileName(logFileNameFormat, now);
             try {
                 final PrintStream ps = new PrintStream(new FileOutputStream(newFileName, true), true, StandardCharsets.UTF_8);
                 close();
@@ -124,5 +119,10 @@ public class DailyLogger extends AbstractLogger {
                 log(AbstractLogger.ERROR, "Cannot change log file", e);
             }
         }
+    }
+
+    private static String getFileName(final String formatString, final ZonedDateTime zdt) {
+        final int yyyymmdd = zdt.getYear() * 10000 + zdt.getMonthValue() * 100 + zdt.getDayOfMonth();
+        return formatString.formatted(yyyymmdd);
     }
 }

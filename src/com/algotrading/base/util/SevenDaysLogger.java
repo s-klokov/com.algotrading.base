@@ -6,25 +6,23 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 /**
- * Логгер, осуществляющий запись в ежедневные файлы лога и дублирующий сообщения об ошибках
- * в отдельные файлы с фрагментом "_error" в названии файла.
- * Файлы лога в своём названии содержат номер дня недели в виде числа от 1 (понедельник) до 7 (воскресенье).
+ * Логгер, осуществляющий запись в ежедневные файлы лога и дублирующий сообщения об ошибках в отдельные файлы.
+ * Файлы логов в своём названии содержат номер дня недели в виде числа от 1 (понедельник) до 7 (воскресенье).
  * Старые файлы перезаписываются новыми в процессе работы.
  */
 public class SevenDaysLogger extends AbstractLogger {
-    private static final String ERR = "_error";
     /**
      * Объект для синхронизации.
      */
     protected final Object mutex = new Object();
     /**
-     * Префикс имени файла лога.
+     * Шаблон имени файла лога, содержащий фрагмент "%d" для вставки номера дня недели.
      */
-    protected final String fileNamePrefix;
+    protected final String logFileNameFormat;
     /**
-     * Суффикс имени файла лога.
+     * Шаблон имени файла с ошибками, содержащий фрагмент "%d" для вставки номера дня недели.
      */
-    protected final String fileNameSuffix;
+    protected final String errFileNameFormat;
     /**
      * Время, после которого нужно произвести смену потока вывода лога.
      */
@@ -37,12 +35,12 @@ public class SevenDaysLogger extends AbstractLogger {
     /**
      * Конструктор.
      *
-     * @param fileNamePrefix префикс файлов лога
-     * @param fileNameSuffix суффикс файлов лога
+     * @param logFileNameFormat шаблон имени файла лога, например: "example.%d.log"
+     * @param errFileNameFormat шаблон имени файла с ошибками, например: "example_error.%d.log"
      */
-    public SevenDaysLogger(final String fileNamePrefix, final String fileNameSuffix) {
-        this.fileNamePrefix = Objects.requireNonNull(fileNamePrefix);
-        this.fileNameSuffix = Objects.requireNonNull(fileNameSuffix);
+    public SevenDaysLogger(final String logFileNameFormat, final String errFileNameFormat) {
+        this.logFileNameFormat = Objects.requireNonNull(logFileNameFormat);
+        this.errFileNameFormat = Objects.requireNonNull(errFileNameFormat);
     }
 
     @Override
@@ -79,7 +77,7 @@ public class SevenDaysLogger extends AbstractLogger {
             ensureLogStreamRotation();
             logStream.println(s);
             if (level >= errLevel) {
-                final String errorFileName = getFileName(fileNamePrefix, ERR, fileNameSuffix);
+                final String errorFileName = errFileNameFormat.formatted(ZonedDateTime.now().getDayOfWeek().getValue());
                 try (final PrintStream errStream = new PrintStream(new FileOutputStream(errorFileName, true), true, StandardCharsets.UTF_8)) {
                     errStream.println(s);
                 } catch (final FileNotFoundException ignored) {
@@ -95,7 +93,7 @@ public class SevenDaysLogger extends AbstractLogger {
             logStream.println(s);
             thrown.printStackTrace(logStream);
             if (level >= errLevel) {
-                final String errorFileName = getFileName(fileNamePrefix, ERR, fileNameSuffix);
+                final String errorFileName = errFileNameFormat.formatted(ZonedDateTime.now().getDayOfWeek().getValue());
                 try (final PrintStream errStream = new PrintStream(new FileOutputStream(errorFileName, true), true, StandardCharsets.UTF_8)) {
                     errStream.println(s);
                     thrown.printStackTrace(errStream);
@@ -103,10 +101,6 @@ public class SevenDaysLogger extends AbstractLogger {
                 }
             }
         }
-    }
-
-    private static String getFileName(final String part1, final String part2, final String part3) {
-        return String.format("%s%s%d%s", part1, part2, ZonedDateTime.now().getDayOfWeek().getValue(), part3);
     }
 
     private static void removeFileIfOld(final String fileName) {
@@ -121,8 +115,9 @@ public class SevenDaysLogger extends AbstractLogger {
         if (!now.isBefore(deadline)) {
             deadline = now.plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
             close();
-            final String newLogFileName = getFileName(fileNamePrefix, "", fileNameSuffix);
-            final String newErrFileName = getFileName(fileNamePrefix, ERR, fileNameSuffix);
+            final int day = ZonedDateTime.now().getDayOfWeek().getValue();
+            final String newLogFileName = logFileNameFormat.formatted(day);
+            final String newErrFileName = errFileNameFormat.formatted(day);
             removeFileIfOld(newLogFileName);
             removeFileIfOld(newErrFileName);
             try {
