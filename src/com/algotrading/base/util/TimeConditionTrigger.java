@@ -110,7 +110,7 @@ public class TimeConditionTrigger {
      * @return триггер, срабатывающий каждую секунду
      * (предполагается, что метод {@link #triggered()} вызывается достаточно часто)
      */
-    public static TimeConditionTrigger newNewSecondTrigger() {
+    public static TimeConditionTrigger newSecondChangedTrigger() {
         return new TimeConditionTrigger(
                 (prev, curr) -> prev.getSecond() != curr.getSecond() || prev.plusSeconds(5).isBefore(curr)
         );
@@ -120,7 +120,7 @@ public class TimeConditionTrigger {
      * @return триггер, срабатывающий каждую минуту
      * (предполагается, что метод {@link #triggered()} вызывается достаточно часто)
      */
-    public static TimeConditionTrigger newNewMinuteTrigger() {
+    public static TimeConditionTrigger newMinuteChangedTrigger() {
         return new TimeConditionTrigger(
                 (prev, curr) -> prev.getMinute() != curr.getMinute() || prev.plusMinutes(5).isBefore(curr)
         );
