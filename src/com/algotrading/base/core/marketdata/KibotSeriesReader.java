@@ -45,7 +45,7 @@ public class KibotSeriesReader {
                                        final int from, final int till,
                                        final LongPredicate timeFilter) throws IOException {
         final FinSeries series = FinSeries.newCandles();
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy;HH:mm");
+        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy;H:mm");
         final StringValue mmddyyyy = new StringValue();
         final StringValue hhmm = new StringValue();
         final LongValue tValue = new LongValue();
@@ -60,6 +60,7 @@ public class KibotSeriesReader {
                 .column(series.low())
                 .column(series.close())
                 .column(series.volume())
+                .skipColumn() // возможно, что последний столбец -- лишний (плохо понятно, какую инфомрацию несёт).
                 .computation(series.timeCode(), () -> {
                     final long t = TimeCodes.timeCode(mmddyyyy.get() + ';' + hhmm.get(), dtf);
                     tValue.set(t);
