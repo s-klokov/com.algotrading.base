@@ -3,10 +3,7 @@ package com.algotrading.base.core;
 import com.algotrading.base.core.values.DoubleValue;
 import com.algotrading.base.core.values.IntValue;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -60,12 +57,12 @@ public class TimeCodes {
      */
     public static long timeCode(final Calendar c) {
         return timeCode(c.get(Calendar.YEAR),
-                        c.get(Calendar.MONTH) + 1,
-                        c.get(Calendar.DAY_OF_MONTH),
-                        c.get(Calendar.HOUR_OF_DAY),
-                        c.get(Calendar.MINUTE),
-                        c.get(Calendar.SECOND),
-                        c.get(Calendar.MILLISECOND));
+                c.get(Calendar.MONTH) + 1,
+                c.get(Calendar.DAY_OF_MONTH),
+                c.get(Calendar.HOUR_OF_DAY),
+                c.get(Calendar.MINUTE),
+                c.get(Calendar.SECOND),
+                c.get(Calendar.MILLISECOND));
     }
 
     /**
@@ -76,12 +73,12 @@ public class TimeCodes {
      */
     public static long timeCode(final LocalDateTime localDateTime) {
         return timeCode(localDateTime.getYear(),
-                        localDateTime.getMonthValue(),
-                        localDateTime.getDayOfMonth(),
-                        localDateTime.getHour(),
-                        localDateTime.getMinute(),
-                        localDateTime.getSecond(),
-                        localDateTime.getNano() / 1_000_000);
+                localDateTime.getMonthValue(),
+                localDateTime.getDayOfMonth(),
+                localDateTime.getHour(),
+                localDateTime.getMinute(),
+                localDateTime.getSecond(),
+                localDateTime.getNano() / 1_000_000);
     }
 
     /**
@@ -173,6 +170,7 @@ public class TimeCodes {
     /**
      * @return количество миллисекунд между timeCode и полуночью 1 января 1970 г.
      */
+    @SuppressWarnings("MagicConstant")
     public static long timeInMillis(long timeCode) {
         final int ms = (int) (timeCode % 1000L);
         timeCode /= 1000L;
@@ -325,6 +323,14 @@ public class TimeCodes {
     }
 
     /**
+     * @param timeCode временная метка
+     * @return день недели
+     */
+    public static DayOfWeek dayOfWeek(final long timeCode) {
+        return LocalDate.of(year(timeCode), month(timeCode), day(timeCode)).getDayOfWeek();
+    }
+
+    /**
      * @param yyyymmdd дата в формате YYYYMMDD
      * @param hhmmss   time в формате HHMMSS
      * @return timeCode
@@ -348,8 +354,8 @@ public class TimeCodes {
      */
     public static String timeCodeString(final long timeCode) {
         return String.format("%4d-%02d-%02d %02d:%02d:%02d.%03d",
-                             year(timeCode), month(timeCode), day(timeCode),
-                             hour(timeCode), min(timeCode), sec(timeCode), ms(timeCode));
+                year(timeCode), month(timeCode), day(timeCode),
+                hour(timeCode), min(timeCode), sec(timeCode), ms(timeCode));
     }
 
     /**
@@ -358,8 +364,8 @@ public class TimeCodes {
      */
     public static String timeCodeStringHHMM(final long timeCode) {
         return String.format("%4d-%02d-%02d %02d:%02d",
-                             year(timeCode), month(timeCode), day(timeCode),
-                             hour(timeCode), min(timeCode));
+                year(timeCode), month(timeCode), day(timeCode),
+                hour(timeCode), min(timeCode));
     }
 
     /**
@@ -368,8 +374,8 @@ public class TimeCodes {
      */
     public static String timeCodeStringHHMMSS(final long timeCode) {
         return String.format("%4d-%02d-%02d %02d:%02d:%02d",
-                             year(timeCode), month(timeCode), day(timeCode),
-                             hour(timeCode), min(timeCode), sec(timeCode));
+                year(timeCode), month(timeCode), day(timeCode),
+                hour(timeCode), min(timeCode), sec(timeCode));
     }
 
     /**
@@ -381,6 +387,7 @@ public class TimeCodes {
      *                 {@link TimeUnit#SECONDS}) или {@link TimeUnit#DAYS}
      * @return временная метка начала таймфрейма
      */
+    @SuppressWarnings("EnhancedSwitchMigration")
     public static long getTimeFrameStart(final long timeCode, final int period, final TimeUnit unit) {
         switch (unit) {
             case DAYS:
@@ -426,6 +433,7 @@ public class TimeCodes {
      *                 или {@link TimeUnit#SECONDS})
      * @return временная метка конца таймфрейма
      */
+    @SuppressWarnings("EnhancedSwitchMigration")
     public static long getTimeFrameEnd(final long timeCode, final int period, final TimeUnit unit) {
         switch (unit) {
             case DAYS:
