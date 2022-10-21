@@ -105,9 +105,9 @@ public abstract class SingleSecurityTest {
 
     public SingleSecurityTest withTimeframe(final int timeframe, final TimeUnit timeUnit) {
         if (timeUnit == TimeUnit.SECONDS
-            || timeUnit == TimeUnit.MINUTES
-            || timeUnit == TimeUnit.HOURS
-            || timeUnit == TimeUnit.DAYS) {
+                || timeUnit == TimeUnit.MINUTES
+                || timeUnit == TimeUnit.HOURS
+                || timeUnit == TimeUnit.DAYS) {
             this.timeframe = timeframe;
             this.timeUnit = timeUnit;
             marketDataMap.clear();
@@ -173,6 +173,19 @@ public abstract class SingleSecurityTest {
     }
 
     /**
+     * Задать рыночные данные.
+     *
+     * @param secPrefix код акции или префикс фьючерса
+     * @param series    рыночные данные
+     * @return этот объект
+     */
+    public SingleSecurityTest putMarketData(final String secPrefix, final FinSeries series) {
+        this.secPrefix = secPrefix;
+        marketDataMap.put(secPrefix, series);
+        return this;
+    }
+
+    /**
      * Запустить тест.
      *
      * @param testOptions опции теста
@@ -194,7 +207,7 @@ public abstract class SingleSecurityTest {
         if (contains(TestOption.EquityDaily, testOptions)) {
             try {
                 Tester.writeEquity(tester.getEquityAndCapitalUsedDailyPercent(capital),
-                                   getEquityFileName(secPrefix, timeframe, timeUnit));
+                        getEquityFileName(secPrefix, timeframe, timeUnit));
             } catch (final IOException e) {
                 e.printStackTrace(ps);
             }
@@ -202,7 +215,7 @@ public abstract class SingleSecurityTest {
         if (contains(TestOption.EquityHourly, testOptions)) {
             try {
                 Tester.writeEquity(tester.getEquityAndCapitalUsedHourlyPercent(capital),
-                                   getEquityFileName(secPrefix, timeframe, timeUnit));
+                        getEquityFileName(secPrefix, timeframe, timeUnit));
             } catch (final IOException e) {
                 e.printStackTrace(ps);
             }
@@ -210,7 +223,7 @@ public abstract class SingleSecurityTest {
         if (contains(TestOption.EquityAndCapitalDaily, testOptions)) {
             try {
                 Tester.writeEquityAndCapitalUsed(tester.getEquityAndCapitalUsedDailyPercent(capital),
-                                                 getEquityFileName(secPrefix, timeframe, timeUnit));
+                        getEquityFileName(secPrefix, timeframe, timeUnit));
             } catch (final IOException e) {
                 e.printStackTrace(ps);
             }
@@ -218,7 +231,7 @@ public abstract class SingleSecurityTest {
         if (contains(TestOption.EquityAndCapitalHourly, testOptions)) {
             try {
                 Tester.writeEquityAndCapitalUsed(tester.getEquityAndCapitalUsedHourlyPercent(capital),
-                                                 getEquityFileName(secPrefix, timeframe, timeUnit));
+                        getEquityFileName(secPrefix, timeframe, timeUnit));
             } catch (final IOException e) {
                 e.printStackTrace(ps);
             }
@@ -303,9 +316,9 @@ public abstract class SingleSecurityTest {
     private void loadStockData(final int from, final int till, final LongPredicate timeFilter) throws IOException {
         ps.print("Loading " + secPrefix + " " + from + "-" + till + "...");
         FinSeries series = provider.getSeries(secPrefix, providerTimeframe, providerTimeUnit,
-                                              TimeCodes.timeCode(from, 0),
-                                              TimeCodes.timeCode(till, 235959),
-                                              timeFilter);
+                TimeCodes.timeCode(from, 0),
+                TimeCodes.timeCode(till, 235959),
+                timeFilter);
         if (timeframe != providerTimeframe || timeUnit != providerTimeUnit) {
             ps.print(" " + series.length() + " ->");
             series = series.compressedCandles(timeframe, timeUnit);
@@ -328,9 +341,9 @@ public abstract class SingleSecurityTest {
             if (futFrom < futTill) {
                 ps.print("Loading " + f.shortCode + " " + futFrom + "-" + futTill + "...");
                 FinSeries series = provider.getSeries(f.shortCode, providerTimeframe, providerTimeUnit,
-                                                      TimeCodes.timeCode(futFrom, 0),
-                                                      TimeCodes.timeCode(futTill, 235959),
-                                                      timeFilter);
+                        TimeCodes.timeCode(futFrom, 0),
+                        TimeCodes.timeCode(futTill, 235959),
+                        timeFilter);
                 if (timeframe != providerTimeframe || timeUnit != providerTimeUnit) {
                     ps.print(" " + series.length() + " ->");
                     series = series.compressedCandles(timeframe, timeUnit);
