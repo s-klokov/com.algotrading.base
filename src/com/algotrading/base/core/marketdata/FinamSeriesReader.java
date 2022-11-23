@@ -13,7 +13,7 @@ import java.io.IOException;
 /**
  * Чтение рыночных данных в формате "Финам" из файла.
  */
-public class FinamSeriesReader<T extends FinamSeriesReader<T>> extends SeriesReader<T> {
+public class FinamSeriesReader extends SeriesReader<FinamSeriesReader> {
     /**
      * Название колонки с информацией о направлении сделки для тиковых данных.
      */
@@ -24,7 +24,7 @@ public class FinamSeriesReader<T extends FinamSeriesReader<T>> extends SeriesRea
      */
     protected boolean hasBuySell = false;
 
-    public T hasBuySell(final boolean hasBuySell) {
+    public FinamSeriesReader hasBuySell(final boolean hasBuySell) {
         this.hasBuySell = hasBuySell;
         return thisAsT;
     }
