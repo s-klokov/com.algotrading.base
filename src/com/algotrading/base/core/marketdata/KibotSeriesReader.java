@@ -6,44 +6,24 @@ import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.values.LongValue;
 import com.algotrading.base.core.values.StringValue;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.function.LongPredicate;
 
 /**
- * Чтение данных в формате kibot из файла.
+ * Чтение данных в формате kibot.com из файла.
  */
-public class KibotSeriesReader {
-
-    private KibotSeriesReader() {
-        throw new UnsupportedOperationException();
-    }
+public class KibotSeriesReader extends SeriesReader<KibotSeriesReader> {
 
     /**
-     * Прочитать временной OHLCV-ряд формата kibot из файла.
+     * Чтение OHLCV-данных в формате kibot.com. Заголовка нет. Данные имеют вид:<br>
+     * 05/28/2014,15:45,24.07,24.07,24.07,24.07,727,2
+     * Содержимое последнего столбца неизвестно и он может отсутствовать.
      *
-     * @param file файл
-     * @return временной ряд
+     * @return рыночные данные формата OHLCV
      * @throws IOException если произошла ошибка ввода-вывода
      */
-    public static FinSeries readSeries(final File file) throws IOException {
-        return readSeries(file, 1900_01_01, 2099_12_31, t -> true);
-    }
-
-    /**
-     * Прочитать временной OHLCV-ряд формата kibot из файла.
-     *
-     * @param file       файл
-     * @param from       начальная дата в формате yyyymmdd
-     * @param till       конечная дата в формате yyyymmdd
-     * @param timeFilter временной фильтр
-     * @return временной ряд
-     * @throws IOException если произошла ошибка ввода-вывода
-     */
-    public static FinSeries readSeries(final File file,
-                                       final int from, final int till,
-                                       final LongPredicate timeFilter) throws IOException {
+    @Override
+    public FinSeries read() throws IOException {
         final FinSeries series = FinSeries.newCandles();
         final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy;H:mm");
         final StringValue mmddyyyy = new StringValue();
@@ -60,32 +40,29 @@ public class KibotSeriesReader {
                 .column(series.low())
                 .column(series.close())
                 .column(series.volume())
-                .skipColumn() // возможно, что последний столбец -- лишний (плохо понятно, какую инфомрацию несёт).
                 .computation(series.timeCode(), () -> {
                     final long t = TimeCodes.timeCode(mmddyyyy.get() + ';' + hhmm.get(), dtf);
                     tValue.set(t);
                     return t;
                 })
-                .rowFilter(() -> from <= TimeCodes.yyyymmdd(tValue.get())
-                                 && TimeCodes.yyyymmdd(tValue.get()) <= till
-                                 && timeFilter.test(tValue.get()))
+                .rowFilter(() -> {
+                    final long t = tValue.get();
+                    final int yymmdd = TimeCodes.yyyymmdd(t);
+                    return from <= yymmdd && yymmdd <= till && timeFilter.test(t);
+                })
                 .read();
         return series;
     }
 
     /**
-     * Прочитать временной OHLCV-ряд формата kibot из файла с днёвками.
+     * Чтение OHLCV-данных дневного таймфрейма в формате kibot.com. Заголовка нет. Данные имеют вид:<br>
+     * 05/24/2022,140.83,141.97,137.33,140.42,92053388
      *
-     * @param file       файл
-     * @param from       начальная дата в формате yyyymmdd
-     * @param till       конечная дата в формате yyyymmdd
-     * @param timeFilter временной фильтр
-     * @return временной ряд
+     * @return рыночные данные формата OHLCV
      * @throws IOException если произошла ошибка ввода-вывода
      */
-    public static FinSeries readDailySeries(final File file,
-                                            final int from, final int till,
-                                            final LongPredicate timeFilter) throws IOException {
+    @Override
+    public FinSeries readDaily() throws IOException {
         final FinSeries series = FinSeries.newCandles();
         final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy;HH:mm");
         final StringValue mmddyyyy = new StringValue();
@@ -105,10 +82,17 @@ public class KibotSeriesReader {
                     tValue.set(t);
                     return t;
                 })
-                .rowFilter(() -> from <= TimeCodes.yyyymmdd(tValue.get())
-                                 && TimeCodes.yyyymmdd(tValue.get()) <= till
-                                 && timeFilter.test(tValue.get()))
+                .rowFilter(() -> {
+                    final long t = tValue.get();
+                    final int yyyymmdd = TimeCodes.yyyymmdd(t);
+                    return from <= yyyymmdd && yyyymmdd <= till && timeFilter.test(t);
+                })
                 .read();
         return series;
+    }
+
+    @Override
+    public FinSeries readTicks() {
+        throw new UnsupportedOperationException("Not implemented!");
     }
 }
