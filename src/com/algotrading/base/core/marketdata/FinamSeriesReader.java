@@ -8,12 +8,16 @@ import com.algotrading.base.core.values.IntValue;
 import com.algotrading.base.core.values.LongValue;
 import com.algotrading.base.core.values.StringValue;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.function.LongPredicate;
 
 /**
  * Чтение рыночных данных в формате "Финам" из файла.
  */
-public class FinamSeriesReader extends SeriesReader<FinamSeriesReader> {
+public class FinamSeriesReader extends SeriesReader {
     /**
      * Название колонки с информацией о направлении сделки для тиковых данных.
      */
@@ -24,9 +28,51 @@ public class FinamSeriesReader extends SeriesReader<FinamSeriesReader> {
      */
     protected boolean hasBuySell = false;
 
+    @Override
+    public FinamSeriesReader file(final File file) {
+        super.file(file);
+        return this;
+    }
+
+    @Override
+    public FinamSeriesReader path(final Path path) {
+        super.path(path);
+        return this;
+    }
+
+    @Override
+    public FinamSeriesReader from(final int yyyymmdd) {
+        super.from(yyyymmdd);
+        return this;
+    }
+
+    @Override
+    public FinamSeriesReader from(final LocalDate localDate) {
+        super.from(localDate);
+        return this;
+    }
+
+    @Override
+    public FinamSeriesReader till(final int yyyymmdd) {
+        super.till(yyyymmdd);
+        return this;
+    }
+
+    @Override
+    public FinamSeriesReader till(final LocalDate localDate) {
+        super.till(localDate);
+        return this;
+    }
+
+    @Override
+    public FinamSeriesReader timeFilter(final LongPredicate timeFilter) {
+        super.timeFilter(timeFilter);
+        return this;
+    }
+
     public FinamSeriesReader hasBuySell(final boolean hasBuySell) {
         this.hasBuySell = hasBuySell;
-        return thisAsT;
+        return this;
     }
 
     /**

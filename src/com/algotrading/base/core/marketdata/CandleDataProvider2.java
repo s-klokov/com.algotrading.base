@@ -14,10 +14,10 @@ import java.util.function.LongPredicate;
 public class CandleDataProvider2 {
 
     private final CandleDataLocator candleDataLocator;
-    private final SeriesReader<? extends SeriesReader<?>> seriesReader;
+    private final SeriesReader seriesReader;
 
     public CandleDataProvider2(final CandleDataLocator candleDataLocator,
-                               final SeriesReader<? extends SeriesReader<?>> seriesReader) {
+                               final SeriesReader seriesReader) {
         this.candleDataLocator = candleDataLocator;
         this.seriesReader = seriesReader;
     }
@@ -26,7 +26,7 @@ public class CandleDataProvider2 {
         return candleDataLocator;
     }
 
-    public  SeriesReader<? extends SeriesReader<?>> seriesReader() {
+    public  SeriesReader seriesReader() {
         return seriesReader;
     }
 

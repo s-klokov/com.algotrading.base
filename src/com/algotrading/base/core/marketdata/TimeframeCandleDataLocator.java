@@ -29,22 +29,26 @@ public class TimeframeCandleDataLocator extends CandleDataLocator {
 
     @Override
     public TimeframeCandleDataLocator from(final int yyyymmdd) {
-        return (TimeframeCandleDataLocator) super.from(yyyymmdd);
+        super.from(yyyymmdd);
+        return this;
     }
 
     @Override
     public TimeframeCandleDataLocator from(final LocalDate localDate) {
-        return (TimeframeCandleDataLocator) super.from(localDate);
+        super.from(localDate);
+        return this;
     }
 
     @Override
     public TimeframeCandleDataLocator till(final int yyyymmdd) {
-        return (TimeframeCandleDataLocator) super.till(yyyymmdd);
+        super.till(yyyymmdd);
+        return this;
     }
 
     @Override
     public TimeframeCandleDataLocator till(final LocalDate localDate) {
-        return (TimeframeCandleDataLocator) super.till(localDate);
+        super.till(localDate);
+        return this;
     }
 
     public TimeframeCandleDataLocator enableFuturesMode(final boolean isFuturesModeEnabled) {

@@ -8,45 +8,43 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.function.LongPredicate;
 
-public abstract class SeriesReader<T extends SeriesReader<T>> {
+public abstract class SeriesReader {
 
-    @SuppressWarnings("unchecked")
-    protected final T thisAsT = (T) this;
     protected File file = null;
     protected int from = 1900_01_01;
     protected int till = 2099_12_31;
     protected LongPredicate timeFilter = t -> true;
 
-    public T file(final File file) {
+    public SeriesReader file(final File file) {
         this.file = file;
-        return thisAsT;
+        return this;
     }
 
-    public T path(final Path path) {
+    public SeriesReader path(final Path path) {
         return file(path.toFile());
     }
 
-    public T from(final int yyyymmdd) {
+    public SeriesReader from(final int yyyymmdd) {
         from = yyyymmdd;
-        return thisAsT;
+        return this;
     }
 
-    public T from(final LocalDate localDate) {
+    public SeriesReader from(final LocalDate localDate) {
         return from(yyyymmdd(localDate));
     }
 
-    public T till(final int yyyymmdd) {
+    public SeriesReader till(final int yyyymmdd) {
         till = yyyymmdd;
-        return thisAsT;
+        return this;
     }
 
-    public T till(final LocalDate localDate) {
+    public SeriesReader till(final LocalDate localDate) {
         return till(yyyymmdd(localDate));
     }
 
-    public T timeFilter(final LongPredicate timeFilter) {
+    public SeriesReader timeFilter(final LongPredicate timeFilter) {
         this.timeFilter = timeFilter;
-        return thisAsT;
+        return this;
     }
 
     public abstract FinSeries read() throws IOException;

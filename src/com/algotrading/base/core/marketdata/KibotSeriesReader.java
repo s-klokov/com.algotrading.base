@@ -6,13 +6,59 @@ import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.values.LongValue;
 import com.algotrading.base.core.values.StringValue;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.function.LongPredicate;
 
 /**
  * Чтение данных в формате kibot.com из файла.
  */
-public class KibotSeriesReader extends SeriesReader<KibotSeriesReader> {
+public class KibotSeriesReader extends SeriesReader {
+
+    @Override
+    public KibotSeriesReader file(final File file) {
+        super.file(file);
+        return this;
+    }
+
+    @Override
+    public KibotSeriesReader path(final Path path) {
+        super.path(path);
+        return this;
+    }
+
+    @Override
+    public KibotSeriesReader from(final int yyyymmdd) {
+        super.from(yyyymmdd);
+        return this;
+    }
+
+    @Override
+    public KibotSeriesReader from(final LocalDate localDate) {
+        super.from(localDate);
+        return this;
+    }
+
+    @Override
+    public KibotSeriesReader till(final int yyyymmdd) {
+        super.till(yyyymmdd);
+        return this;
+    }
+
+    @Override
+    public KibotSeriesReader till(final LocalDate localDate) {
+        super.till(localDate);
+        return this;
+    }
+
+    @Override
+    public KibotSeriesReader timeFilter(final LongPredicate timeFilter) {
+        super.timeFilter(timeFilter);
+        return this;
+    }
 
     /**
      * Чтение OHLCV-данных в формате kibot.com. Заголовка нет. Данные имеют вид:<br>

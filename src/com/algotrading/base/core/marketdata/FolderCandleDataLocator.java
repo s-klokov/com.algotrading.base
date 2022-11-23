@@ -12,22 +12,26 @@ public class FolderCandleDataLocator extends CandleDataLocator {
 
     @Override
     public FolderCandleDataLocator from(final int from) {
-        return (FolderCandleDataLocator) super.from(from);
+        super.from(from);
+        return this;
     }
 
     @Override
     public FolderCandleDataLocator from(final LocalDate localDate) {
-        return (FolderCandleDataLocator) super.from(localDate);
+        super.from(localDate);
+        return this;
     }
 
     @Override
     public FolderCandleDataLocator till(final int till) {
-        return (FolderCandleDataLocator) super.till(till);
+        super.till(till);
+        return this;
     }
 
     @Override
     public FolderCandleDataLocator till(final LocalDate localDate) {
-        return (FolderCandleDataLocator) super.till(localDate);
+        super.till(localDate);
+        return this;
     }
 
     public FolderCandleDataLocator(final String filenameExtension, final String... folders) {
