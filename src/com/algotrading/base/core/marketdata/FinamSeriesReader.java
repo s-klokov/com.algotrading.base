@@ -45,7 +45,7 @@ public class FinamSeriesReader extends SeriesReader<FinamSeriesReader> {
         new CsvReader()
                 .file(file)
                 .splitSeparator(";")
-                .lineFilter(line -> line.startsWith("<TICKER>"))
+                .lineFilter(line -> !line.startsWith("<TICKER>"))
                 .skipColumn() // TICKER
                 .skipColumn() // PERIOD
                 .value(yyyymmdd)
@@ -95,7 +95,7 @@ public class FinamSeriesReader extends SeriesReader<FinamSeriesReader> {
         final CsvReader csvReader = new CsvReader()
                 .file(file)
                 .splitSeparator(";")
-                .lineFilter(line -> line.startsWith("<DATE>"))
+                .lineFilter(line -> !line.startsWith("<DATE>"))
                 .value(yyyymmdd)
                 .value(hhmmssms)
                 .column(series.last())
