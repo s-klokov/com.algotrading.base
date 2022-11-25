@@ -1,8 +1,11 @@
 package com.algotrading.base.examples;
 
 import com.algotrading.base.core.TimeCodes;
+import com.algotrading.base.core.TimeFilters;
 import com.algotrading.base.core.csv.CsvWriter;
-import com.algotrading.base.core.marketdata.CandleDataProvider;
+import com.algotrading.base.core.marketdata.CandleDataProvider2;
+import com.algotrading.base.core.marketdata.FinamSeriesReader;
+import com.algotrading.base.core.marketdata.TimeframeCandleDataLocator;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.helpers.IOHelper;
 
@@ -25,19 +28,14 @@ class CandlesExporter {
     private void export(final String secCode,
                         final int timeframe, final TimeUnit unit,
                         final int from, final int till) {
-        final CandleDataProvider provider = new CandleDataProvider(
-                "D:/MarketData/Finam", "D:/MarketData/Quik/Export"
-        );
+        final CandleDataProvider2 provider = new CandleDataProvider2(
+                new TimeframeCandleDataLocator(1, TimeUnit.MINUTES,
+                        "D:/MarketData/Finam", "D:/MarketData/Quik/Export", "D:/MarketData/Quik/Archive"),
+                new FinamSeriesReader());
 
         System.out.println("Loading " + secCode + " " + from + "-" + till + "...");
         try (final PrintStream ps = IOHelper.getPrintStream(secCode + "_" + from + "_" + till + "_" + timeframe + ".csv")) {
-            FinSeries series = provider.getSeries(secCode, 1, TimeUnit.MINUTES,
-                                                  TimeCodes.timeCode(from, 100000),
-                                                  TimeCodes.timeCode(till, 184000),
-                                                  t -> {
-                                                      final int hhmm = TimeCodes.hhmm(t);
-                                                      return 1000 <= hhmm && hhmm < 1840;
-                                                  });
+            FinSeries series = provider.from(from).till(till).timeFilter(TimeFilters.FILTER_1000_1840).getSeries(secCode);
             if (timeframe != 1) {
                 series = series.compressedCandles(timeframe, TimeUnit.MINUTES);
             }
