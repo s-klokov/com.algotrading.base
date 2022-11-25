@@ -4,6 +4,9 @@ import com.algotrading.base.core.columns.DoubleColumn;
 import com.algotrading.base.core.columns.LongColumn;
 import com.algotrading.base.core.commission.SimpleCommission;
 import com.algotrading.base.core.indicators.Mfi;
+import com.algotrading.base.core.marketdata.CandleDataProvider2;
+import com.algotrading.base.core.marketdata.FinamSeriesReader;
+import com.algotrading.base.core.marketdata.TimeframeCandleDataLocator;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.tester.*;
 
@@ -30,7 +33,7 @@ import static com.algotrading.base.core.TimeFilters.FILTER_1000_1845;
  * Также можно смоделировать торговлю портфелем из нескольких систем,
  * каждая из которых имеет свои параметры.
  */
-class BasicMfiTest extends SingleSecurityTest {
+class BasicMfiTest extends SingleSecurityTest2 {
     /**
      * Набор стратегий.
      */
@@ -47,16 +50,20 @@ class BasicMfiTest extends SingleSecurityTest {
         try {
             new BasicMfiTest()
                     .withCapital(100_000_000)
-                    .withProviderSettings(1, TimeUnit.MINUTES,
-                            "D:/MarketData/Finam",
-                            "D:/MarketData/Quik/Export",
-                            "D:/MarketData/Quik/Archive")
+                    .withCandleDataProvider(new CandleDataProvider2(
+                            new TimeframeCandleDataLocator(
+                                    1, TimeUnit.MINUTES,
+                                    "D:/MarketData/Finam",
+                                    "D:/MarketData/Quik/Export",
+                                    "D:/MarketData/Quik/Archive"),
+                            new FinamSeriesReader()))
                     .withTimeframe(15, TimeUnit.MINUTES)
                     .withFuturesOverlapDays(10)
                     .withMarketCommission(SimpleCommission.ofPercent(0.01))
-                    .loadMarketData(secPrefix,
-                            2015_01_01, 2021_03_31,
-                            FILTER_1000_1845)
+                    .from(2015_01_01)
+                    .till(2021_03_31)
+                    .timeFilter(FILTER_1000_1845)
+                    .loadMarketData(secPrefix)
                     .optimize();
 //                    .runTest(TestOption.Summary, TestOption.EquityAndCapitalDaily);
         } catch (final IOException | RuntimeException e) {
