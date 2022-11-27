@@ -2,7 +2,7 @@ package com.algotrading.base.core.tester;
 
 import com.algotrading.base.core.commission.Commission;
 import com.algotrading.base.core.commission.SimpleCommission;
-import com.algotrading.base.core.marketdata.CandleDataProvider2;
+import com.algotrading.base.core.marketdata.CandleDataProvider;
 import com.algotrading.base.core.marketdata.Futures;
 import com.algotrading.base.core.series.FinSeries;
 
@@ -17,7 +17,7 @@ import java.util.function.LongPredicate;
 /**
  * Шаблон для написания тестов на истории на одной акции или фьючерсе.
  */
-public abstract class SingleSecurityTest2 {
+public abstract class SingleSecurityTest {
     /**
      * Поток вывода результатов.
      */
@@ -25,7 +25,7 @@ public abstract class SingleSecurityTest2 {
     /**
      * Провайдер свечных данных.
      */
-    protected CandleDataProvider2 candleDataProvider = null;
+    protected CandleDataProvider candleDataProvider = null;
     /**
      * Код акции или префикс фьючерса.
      */
@@ -86,18 +86,18 @@ public abstract class SingleSecurityTest2 {
         WalkForward,  // тест Walk-Forward
     }
 
-    public SingleSecurityTest2 withOutput(final PrintStream ps) {
+    public SingleSecurityTest withOutput(final PrintStream ps) {
         this.ps = ps;
         return this;
     }
 
-    public SingleSecurityTest2 withCandleDataProvider(final CandleDataProvider2 candleDataProvider) {
+    public SingleSecurityTest withCandleDataProvider(final CandleDataProvider candleDataProvider) {
         this.candleDataProvider = candleDataProvider;
         marketDataMap.clear();
         return this;
     }
 
-    public SingleSecurityTest2 withTimeframe(final int timeframe, final TimeUnit timeUnit) {
+    public SingleSecurityTest withTimeframe(final int timeframe, final TimeUnit timeUnit) {
         if (timeUnit == TimeUnit.SECONDS
                 || timeUnit == TimeUnit.MINUTES
                 || timeUnit == TimeUnit.HOURS
@@ -111,56 +111,56 @@ public abstract class SingleSecurityTest2 {
         }
     }
 
-    public SingleSecurityTest2 withCapital(final double capital) {
+    public SingleSecurityTest withCapital(final double capital) {
         this.capital = capital;
         return this;
     }
 
-    public SingleSecurityTest2 withLimitCommission(final Commission limitCommission) {
+    public SingleSecurityTest withLimitCommission(final Commission limitCommission) {
         this.limitCommission = limitCommission;
         return this;
     }
 
-    public SingleSecurityTest2 withMarketCommission(final Commission marketCommission) {
+    public SingleSecurityTest withMarketCommission(final Commission marketCommission) {
         this.marketCommission = marketCommission;
         return this;
     }
 
-    public SingleSecurityTest2 withFuturesOverlapDays(final int futuresOverlapDays) {
+    public SingleSecurityTest withFuturesOverlapDays(final int futuresOverlapDays) {
         this.futuresOverlapDays = futuresOverlapDays;
         return this;
     }
 
-    public SingleSecurityTest2 enableFuturesPrefix(final boolean enableFuturesPrefix) {
+    public SingleSecurityTest enableFuturesPrefix(final boolean enableFuturesPrefix) {
         this.enableFuturesPrefix = enableFuturesPrefix;
         return this;
     }
 
-    public SingleSecurityTest2 from(final int yyyymmdd) {
+    public SingleSecurityTest from(final int yyyymmdd) {
         from = yyyymmdd;
         candleDataProvider.from(yyyymmdd);
         return this;
     }
 
-    public SingleSecurityTest2 from(final LocalDate localDate) {
+    public SingleSecurityTest from(final LocalDate localDate) {
         from = yyyymmdd(localDate);
         candleDataProvider.from(localDate);
         return this;
     }
 
-    public SingleSecurityTest2 till(final int yyyymmdd) {
+    public SingleSecurityTest till(final int yyyymmdd) {
         till = yyyymmdd;
         candleDataProvider.till(yyyymmdd);
         return this;
     }
 
-    public SingleSecurityTest2 till(final LocalDate localDate) {
+    public SingleSecurityTest till(final LocalDate localDate) {
         till = yyyymmdd(localDate);
         candleDataProvider.till(localDate);
         return this;
     }
 
-    public SingleSecurityTest2 timeFilter(final LongPredicate timeFilter) {
+    public SingleSecurityTest timeFilter(final LongPredicate timeFilter) {
         this.timeFilter = timeFilter;
         return this;
     }
@@ -172,7 +172,7 @@ public abstract class SingleSecurityTest2 {
      * @return этот объект
      * @throws IOException если произошла ошибка ввода-вывода
      */
-    public SingleSecurityTest2 loadMarketData(final String secPrefix) throws IOException {
+    public SingleSecurityTest loadMarketData(final String secPrefix) throws IOException {
         this.secPrefix = secPrefix;
         marketDataMap.clear();
         if (!enableFuturesPrefix || Futures.withPrefix(this.secPrefix).length == 0) {
@@ -184,12 +184,12 @@ public abstract class SingleSecurityTest2 {
     }
 
     /**
-     * Использовать рыночные данные из объекта типа {@link SingleSecurityTest2}.
+     * Использовать рыночные данные из объекта типа {@link SingleSecurityTest}.
      *
      * @param test объект, рыночные данные которого будут использованы
      * @return этот объект
      */
-    public SingleSecurityTest2 useMarketDataOf(final SingleSecurityTest2 test) {
+    public SingleSecurityTest useMarketDataOf(final SingleSecurityTest test) {
         secPrefix = test.secPrefix;
         marketDataMap.clear();
         marketDataMap.putAll(test.marketDataMap);
@@ -203,7 +203,7 @@ public abstract class SingleSecurityTest2 {
      * @param series    рыночные данные
      * @return этот объект
      */
-    public SingleSecurityTest2 putMarketData(final String secPrefix, final FinSeries series) {
+    public SingleSecurityTest putMarketData(final String secPrefix, final FinSeries series) {
         this.secPrefix = secPrefix;
         marketDataMap.put(secPrefix, series);
         return this;

@@ -5,7 +5,7 @@ import com.algotrading.base.core.TimeCodes;
 import com.algotrading.base.core.columns.LongColumn;
 import com.algotrading.base.core.commission.Commission;
 import com.algotrading.base.core.commission.SimpleCommission;
-import com.algotrading.base.core.marketdata.CandleDataProvider2;
+import com.algotrading.base.core.marketdata.CandleDataProvider;
 import com.algotrading.base.core.marketdata.Futures;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.sync.Synchronizer;
@@ -28,7 +28,7 @@ public abstract class MultiSecurityTest {
     /**
      * Провайдер свечных данных.
      */
-    protected CandleDataProvider2 candleDataProvider = null;
+    protected CandleDataProvider candleDataProvider = null;
     /**
      * Нужно ли детектировать фьючерсы по их префиксу.
      */
@@ -97,7 +97,7 @@ public abstract class MultiSecurityTest {
         return this;
     }
 
-    public MultiSecurityTest withCandleDataProvider(final CandleDataProvider2 candleDataProvider) {
+    public MultiSecurityTest withCandleDataProvider(final CandleDataProvider candleDataProvider) {
         this.candleDataProvider = candleDataProvider;
         marketDataMap.clear();
         return this;

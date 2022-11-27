@@ -4,7 +4,7 @@ import com.algotrading.base.core.columns.DoubleColumn;
 import com.algotrading.base.core.columns.LongColumn;
 import com.algotrading.base.core.commission.SimpleCommission;
 import com.algotrading.base.core.indicators.Mfi;
-import com.algotrading.base.core.marketdata.CandleDataProvider2;
+import com.algotrading.base.core.marketdata.CandleDataProvider;
 import com.algotrading.base.core.marketdata.readers.FinamSeriesReader;
 import com.algotrading.base.core.marketdata.locators.TimeframeCandleDataLocator;
 import com.algotrading.base.core.series.FinSeries;
@@ -33,7 +33,7 @@ import static com.algotrading.base.core.TimeFilters.FILTER_1000_1845;
  * Также можно смоделировать торговлю портфелем из нескольких систем,
  * каждая из которых имеет свои параметры.
  */
-class BasicMfiTest extends SingleSecurityTest2 {
+class BasicMfiTest extends SingleSecurityTest {
     /**
      * Набор стратегий.
      */
@@ -50,7 +50,7 @@ class BasicMfiTest extends SingleSecurityTest2 {
         try {
             new BasicMfiTest()
                     .withCapital(100_000_000)
-                    .withCandleDataProvider(new CandleDataProvider2(
+                    .withCandleDataProvider(new CandleDataProvider(
                             new TimeframeCandleDataLocator(
                                     1, TimeUnit.MINUTES,
                                     "D:/MarketData/Finam",

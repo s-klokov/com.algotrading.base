@@ -3,7 +3,7 @@ package com.algotrading.base.examples;
 import com.algotrading.base.core.TimeCodes;
 import com.algotrading.base.core.TimeFilters;
 import com.algotrading.base.core.csv.CsvWriter;
-import com.algotrading.base.core.marketdata.CandleDataProvider2;
+import com.algotrading.base.core.marketdata.CandleDataProvider;
 import com.algotrading.base.core.marketdata.readers.FinamSeriesReader;
 import com.algotrading.base.core.marketdata.locators.TimeframeCandleDataLocator;
 import com.algotrading.base.core.series.FinSeries;
@@ -28,7 +28,7 @@ class CandlesExporter {
     private void export(final String secCode,
                         final int timeframe, final TimeUnit unit,
                         final int from, final int till) {
-        final CandleDataProvider2 provider = new CandleDataProvider2(
+        final CandleDataProvider provider = new CandleDataProvider(
                 new TimeframeCandleDataLocator(1, TimeUnit.MINUTES,
                         "D:/MarketData/Finam", "D:/MarketData/Quik/Export", "D:/MarketData/Quik/Archive"),
                 new FinamSeriesReader());

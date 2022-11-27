@@ -13,13 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.LongPredicate;
 
-public class CandleDataProvider2 {
+public class CandleDataProvider {
 
     private final CandleDataLocator candleDataLocator;
     private final SeriesReader seriesReader;
 
-    public CandleDataProvider2(final CandleDataLocator candleDataLocator,
-                               final SeriesReader seriesReader) {
+    public CandleDataProvider(final CandleDataLocator candleDataLocator,
+                              final SeriesReader seriesReader) {
         this.candleDataLocator = candleDataLocator;
         this.seriesReader = seriesReader;
     }
@@ -32,31 +32,31 @@ public class CandleDataProvider2 {
         return seriesReader;
     }
 
-    public CandleDataProvider2 from(final int yyyymmdd) {
+    public CandleDataProvider from(final int yyyymmdd) {
         candleDataLocator().from(yyyymmdd);
         seriesReader().from(yyyymmdd);
         return this;
     }
 
-    public CandleDataProvider2 from(final LocalDate localDate) {
+    public CandleDataProvider from(final LocalDate localDate) {
         candleDataLocator().from(localDate);
         seriesReader().from(localDate);
         return this;
     }
 
-    public CandleDataProvider2 till(final int yyyymmdd) {
+    public CandleDataProvider till(final int yyyymmdd) {
         candleDataLocator().till(yyyymmdd);
         seriesReader().till(yyyymmdd);
         return this;
     }
 
-    public CandleDataProvider2 till(final LocalDate localDate) {
+    public CandleDataProvider till(final LocalDate localDate) {
         candleDataLocator().till(localDate);
         seriesReader().till(localDate);
         return this;
     }
 
-    public CandleDataProvider2 timeFilter(final LongPredicate timeFilter) {
+    public CandleDataProvider timeFilter(final LongPredicate timeFilter) {
         seriesReader().timeFilter(timeFilter);
         return this;
     }
