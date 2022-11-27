@@ -1,6 +1,8 @@
 package com.algotrading.base.core.marketdata;
 
 import com.algotrading.base.core.columns.LongColumn;
+import com.algotrading.base.core.marketdata.locators.CandleDataLocator;
+import com.algotrading.base.core.marketdata.readers.SeriesReader;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.sync.Synchronizer;
 

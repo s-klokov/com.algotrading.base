@@ -1,4 +1,4 @@
-package com.algotrading.base.core.marketdata;
+package com.algotrading.base.core.marketdata.readers;
 
 import com.algotrading.base.core.TimeCodes;
 import com.algotrading.base.core.csv.CsvReader;
@@ -27,6 +27,11 @@ public class FinamSeriesReader extends SeriesReader {
      * Признак наличия колонки с информацией о направлении сделки для тиковых данных.
      */
     protected boolean hasBuySell = false;
+    /**
+     * Количестро начальных колонок с данными о тикере, периоде и пр.,
+     * которые надо пропустить при чтении свечных данных.
+     */
+    protected int numColumnsToSkip = 2;
 
     @Override
     public FinamSeriesReader file(final File file) {
@@ -75,6 +80,11 @@ public class FinamSeriesReader extends SeriesReader {
         return this;
     }
 
+    public FinamSeriesReader numColumnsToSkip(final int numColumnsToSkip) {
+        this.numColumnsToSkip = numColumnsToSkip;
+        return this;
+    }
+
     /**
      * Чтение OHLCV-данных в формате "Финам". Заголовок имеет вид:<br>
      * &lt;TICKER&gt;;&lt;PER&gt;;&lt;DATE&gt;;&lt;TIME&gt;;&lt;OPEN&gt;;&lt;HIGH&gt;;&lt;LOW&gt;;&lt;CLOSE&gt;;&lt;VOL&gt;
@@ -88,12 +98,14 @@ public class FinamSeriesReader extends SeriesReader {
         final StringValue yyyymmdd = new StringValue();
         final StringValue hhmmss = new StringValue();
         final LongValue tValue = new LongValue();
-        new CsvReader()
+        final CsvReader csvReader = new CsvReader()
                 .file(file)
                 .splitSeparator(";")
-                .lineFilter(line -> !line.startsWith("<TICKER>"))
-                .skipColumn() // TICKER
-                .skipColumn() // PERIOD
+                .lineFilter(line -> !line.startsWith("<TICKER>"));
+        for (int i = 0; i < numColumnsToSkip; i++) {
+            csvReader.skipColumn(); // TICKER, PERIOD, ...
+        }
+        csvReader
                 .value(yyyymmdd)
                 .value(hhmmss)
                 .column(series.open())

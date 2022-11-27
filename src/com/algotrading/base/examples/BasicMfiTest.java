@@ -5,8 +5,8 @@ import com.algotrading.base.core.columns.LongColumn;
 import com.algotrading.base.core.commission.SimpleCommission;
 import com.algotrading.base.core.indicators.Mfi;
 import com.algotrading.base.core.marketdata.CandleDataProvider2;
-import com.algotrading.base.core.marketdata.FinamSeriesReader;
-import com.algotrading.base.core.marketdata.TimeframeCandleDataLocator;
+import com.algotrading.base.core.marketdata.readers.FinamSeriesReader;
+import com.algotrading.base.core.marketdata.locators.TimeframeCandleDataLocator;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.tester.*;
 

@@ -4,8 +4,8 @@ import com.algotrading.base.core.TimeCodes;
 import com.algotrading.base.core.TimeFilters;
 import com.algotrading.base.core.csv.CsvWriter;
 import com.algotrading.base.core.marketdata.CandleDataProvider2;
-import com.algotrading.base.core.marketdata.FinamSeriesReader;
-import com.algotrading.base.core.marketdata.TimeframeCandleDataLocator;
+import com.algotrading.base.core.marketdata.readers.FinamSeriesReader;
+import com.algotrading.base.core.marketdata.locators.TimeframeCandleDataLocator;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.helpers.IOHelper;
 

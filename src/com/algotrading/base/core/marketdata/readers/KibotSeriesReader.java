@@ -1,4 +1,4 @@
-package com.algotrading.base.core.marketdata;
+package com.algotrading.base.core.marketdata.readers;
 
 import com.algotrading.base.core.TimeCodes;
 import com.algotrading.base.core.csv.CsvReader;

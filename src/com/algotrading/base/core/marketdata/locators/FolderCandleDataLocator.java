@@ -1,14 +1,20 @@
-package com.algotrading.base.core.marketdata;
+package com.algotrading.base.core.marketdata.locators;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FolderCandleDataLocator extends CandleDataLocator {
 
+    private final FilenameFilter filenameFilter;
     private final String[] folders;
-    private final String filenameExtension;
+
+    public FolderCandleDataLocator(final FilenameFilter filenameFilter, final String... folders) {
+        this.filenameFilter = filenameFilter;
+        this.folders = folders;
+    }
 
     @Override
     public FolderCandleDataLocator from(final int from) {
@@ -34,18 +40,17 @@ public class FolderCandleDataLocator extends CandleDataLocator {
         return this;
     }
 
-    public FolderCandleDataLocator(final String filenameExtension, final String... folders) {
-        this.filenameExtension = filenameExtension;
-        this.folders = folders;
-    }
-
     @Override
     public List<File> getFiles(final String secCode) {
         final List<File> files = new ArrayList<>();
         for (final String folder : folders) {
-            final File file = new File(folder, secCode + "." + filenameExtension);
-            if (file.exists() && file.isFile()) {
-                files.add(file);
+            final File[] folderFiles = new File(folder).listFiles(filenameFilter);
+            if (folderFiles != null) {
+                for (final File file : folderFiles) {
+                    if (file.exists() && file.isFile()) {
+                        files.add(file);
+                    }
+                }
             }
         }
         return files;

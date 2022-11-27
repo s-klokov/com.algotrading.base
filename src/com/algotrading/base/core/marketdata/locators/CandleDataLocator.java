@@ -1,4 +1,4 @@
-package com.algotrading.base.core.marketdata;
+package com.algotrading.base.core.marketdata.locators;
 
 import java.io.File;
 import java.time.LocalDate;
