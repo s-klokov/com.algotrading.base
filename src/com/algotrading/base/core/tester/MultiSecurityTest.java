@@ -5,7 +5,7 @@ import com.algotrading.base.core.TimeCodes;
 import com.algotrading.base.core.columns.LongColumn;
 import com.algotrading.base.core.commission.Commission;
 import com.algotrading.base.core.commission.SimpleCommission;
-import com.algotrading.base.core.marketdata.CandleDataProvider;
+import com.algotrading.base.core.marketdata.CandleDataProvider2;
 import com.algotrading.base.core.marketdata.Futures;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.sync.Synchronizer;
@@ -28,15 +28,7 @@ public abstract class MultiSecurityTest {
     /**
      * Провайдер свечных данных.
      */
-    protected CandleDataProvider provider = null;
-    /**
-     * Таймфрейм, используемый при загрузке данных.
-     */
-    protected int providerTimeframe = 1;
-    /**
-     * Единица измерения времени для указания таймфрейма провайдера данных.
-     */
-    protected TimeUnit providerTimeUnit = TimeUnit.MINUTES;
+    protected CandleDataProvider2 candleDataProvider = null;
     /**
      * Нужно ли детектировать фьючерсы по их префиксу.
      */
@@ -77,6 +69,11 @@ public abstract class MultiSecurityTest {
      * Комиссия для рыночных сделок.
      */
     protected Commission marketCommission = SimpleCommission.ofPercent(0.02);
+
+    protected int from = 1900_01_01;
+    protected int till = 2099_12_31;
+    protected LongPredicate timeFilter = t -> true;
+
     /**
      * Тестер.
      */
@@ -100,19 +97,17 @@ public abstract class MultiSecurityTest {
         return this;
     }
 
-    public MultiSecurityTest withProviderSettings(final int providerTimeframe, final TimeUnit providerTimeUnit, final String... paths) {
-        provider = new CandleDataProvider(paths);
-        this.providerTimeframe = providerTimeframe;
-        this.providerTimeUnit = providerTimeUnit;
+    public MultiSecurityTest withCandleDataProvider(final CandleDataProvider2 candleDataProvider) {
+        this.candleDataProvider = candleDataProvider;
         marketDataMap.clear();
         return this;
     }
 
     public MultiSecurityTest withTimeframe(final int timeframe, final TimeUnit timeUnit) {
         if (timeUnit == TimeUnit.SECONDS
-            || timeUnit == TimeUnit.MINUTES
-            || timeUnit == TimeUnit.HOURS
-            || timeUnit == TimeUnit.DAYS) {
+                || timeUnit == TimeUnit.MINUTES
+                || timeUnit == TimeUnit.HOURS
+                || timeUnit == TimeUnit.DAYS) {
             this.timeframe = timeframe;
             this.timeUnit = timeUnit;
             marketDataMap.clear();
@@ -152,6 +147,35 @@ public abstract class MultiSecurityTest {
         return this;
     }
 
+    public MultiSecurityTest from(final int yyyymmdd) {
+        from = yyyymmdd;
+        candleDataProvider.from(yyyymmdd);
+        return this;
+    }
+
+    public MultiSecurityTest from(final LocalDate localDate) {
+        from = yyyymmdd(localDate);
+        candleDataProvider.from(localDate);
+        return this;
+    }
+
+    public MultiSecurityTest till(final int yyyymmdd) {
+        till = yyyymmdd;
+        candleDataProvider.till(yyyymmdd);
+        return this;
+    }
+
+    public MultiSecurityTest till(final LocalDate localDate) {
+        till = yyyymmdd(localDate);
+        candleDataProvider.till(localDate);
+        return this;
+    }
+
+    public MultiSecurityTest timeFilter(final LongPredicate timeFilter) {
+        this.timeFilter = timeFilter;
+        return this;
+    }
+
     /**
      * Выровнять данные по времени, обеспечив одинаковое количество свечей в каждом временном ряде.
      * При этом добавляемые свечи без сделок будут иметь нулевой объём торгов и совпадающие значения
@@ -176,7 +200,7 @@ public abstract class MultiSecurityTest {
                     alignedSeries.volume().append(series.volume().get(i));
                 } else {
                     final double price = (alignedSeries.length() == 0) ?
-                                         series.open().get(0) : alignedSeries.close().getLast();
+                            series.open().get(0) : alignedSeries.close().getLast();
                     alignedSeries.timeCode().append(synchronizer.timeCode());
                     alignedSeries.open().append(price);
                     alignedSeries.high().append(price);
@@ -194,15 +218,12 @@ public abstract class MultiSecurityTest {
      * Загрузить данные.
      *
      * @param secPrefixes набор кодов акций или префиксов фьючерсов
-     * @param from        начало периода в формате YYYYMMDD
-     * @param till        конец периода (включительно) в формате YYYYMMDD
-     * @param timeFilter  фильтр времени
      * @return этот объект
      * @throws IOException если произошла ошибка ввода-вывода
      */
-    public MultiSecurityTest loadMarketData(final Iterable<String> secPrefixes, final int from, final int till, final LongPredicate timeFilter) throws IOException {
+    public MultiSecurityTest loadMarketData(final Iterable<String> secPrefixes) throws IOException {
         for (final String secPrefix : secPrefixes) {
-            loadMarketData(secPrefix, from, till, timeFilter);
+            loadMarketData(secPrefix);
         }
         return this;
     }
@@ -211,15 +232,12 @@ public abstract class MultiSecurityTest {
      * Загрузить данные.
      *
      * @param secPrefixes массив кодов акций или префиксов фьючерсов
-     * @param from        начало периода в формате YYYYMMDD
-     * @param till        конец периода (включительно) в формате YYYYMMDD
-     * @param timeFilter  фильтр времени
      * @return этот объект
      * @throws IOException если произошла ошибка ввода-вывода
      */
-    public MultiSecurityTest loadMarketData(final String[] secPrefixes, final int from, final int till, final LongPredicate timeFilter) throws IOException {
+    public MultiSecurityTest loadMarketData(final String[] secPrefixes) throws IOException {
         for (final String secPrefix : secPrefixes) {
-            loadMarketData(secPrefix, from, till, timeFilter);
+            loadMarketData(secPrefix);
         }
         return this;
     }
@@ -227,22 +245,19 @@ public abstract class MultiSecurityTest {
     /**
      * Загрузить данные.
      *
-     * @param secPrefix  код акции или префикс фьючерса
-     * @param from       начало периода в формате YYYYMMDD
-     * @param till       конец периода (включительно) в формате YYYYMMDD
-     * @param timeFilter фильтр времени
+     * @param secPrefix код акции или префикс фьючерса
      * @return этот объект
      * @throws IOException если произошла ошибка ввода-вывода
      */
-    public MultiSecurityTest loadMarketData(final String secPrefix, final int from, final int till, final LongPredicate timeFilter) throws IOException {
+    public MultiSecurityTest loadMarketData(final String secPrefix) throws IOException {
         if (prefixList.contains(secPrefix)) {
             throw new IllegalArgumentException("Market data already loaded for " + secPrefix);
         }
         prefixList.add(secPrefix);
         if (!enableFuturesPrefix || Futures.withPrefix(secPrefix).length == 0) {
-            loadStockData(secPrefix, from, till, timeFilter);
+            loadStockData(secPrefix);
         } else {
-            loadFuturesData(secPrefix, from, till, timeFilter);
+            loadFuturesData(secPrefix);
         }
         return this;
     }
@@ -267,7 +282,7 @@ public abstract class MultiSecurityTest {
         if (contains(TestOption.EquityDaily, testOptions)) {
             try {
                 Tester.writeEquity(tester.getEquityAndCapitalUsedDailyPercent(capital),
-                                   getEquityFileName(label, timeframe, timeUnit));
+                        getEquityFileName(label, timeframe, timeUnit));
             } catch (final IOException e) {
                 e.printStackTrace(ps);
             }
@@ -275,7 +290,7 @@ public abstract class MultiSecurityTest {
         if (contains(TestOption.EquityHourly, testOptions)) {
             try {
                 Tester.writeEquity(tester.getEquityAndCapitalUsedHourlyPercent(capital),
-                                   getEquityFileName(label, timeframe, timeUnit));
+                        getEquityFileName(label, timeframe, timeUnit));
             } catch (final IOException e) {
                 e.printStackTrace(ps);
             }
@@ -283,7 +298,7 @@ public abstract class MultiSecurityTest {
         if (contains(TestOption.EquityAndCapitalDaily, testOptions)) {
             try {
                 Tester.writeEquityAndCapitalUsed(tester.getEquityAndCapitalUsedDailyPercent(capital),
-                                                 getEquityFileName(label, timeframe, timeUnit));
+                        getEquityFileName(label, timeframe, timeUnit));
             } catch (final IOException e) {
                 e.printStackTrace(ps);
             }
@@ -291,7 +306,7 @@ public abstract class MultiSecurityTest {
         if (contains(TestOption.EquityAndCapitalHourly, testOptions)) {
             try {
                 Tester.writeEquityAndCapitalUsed(tester.getEquityAndCapitalUsedHourlyPercent(capital),
-                                                 getEquityFileName(label, timeframe, timeUnit));
+                        getEquityFileName(label, timeframe, timeUnit));
             } catch (final IOException e) {
                 e.printStackTrace(ps);
             }
@@ -399,7 +414,7 @@ public abstract class MultiSecurityTest {
                 final Futures f = Futures.byShortCode(secCode);
                 if (!map.containsKey(f.prefix)) {
                     if (hhmm < hhmmSwitch && yyyymmdd <= f.oneDayBeforeExpiry
-                        || hhmm >= hhmmSwitch && yyyymmdd < f.oneDayBeforeExpiry) {
+                            || hhmm >= hhmmSwitch && yyyymmdd < f.oneDayBeforeExpiry) {
                         map.put(f.prefix, secCode);
                     }
                 }
@@ -408,21 +423,19 @@ public abstract class MultiSecurityTest {
         return map;
     }
 
-    private void loadStockData(final String secPrefix, final int from, final int till, final LongPredicate timeFilter) throws IOException {
+    private void loadStockData(final String secPrefix) throws IOException {
         ps.print("Loading " + secPrefix + " " + from + "-" + till + "...");
-        FinSeries series = provider.getSeries(secPrefix, providerTimeframe, providerTimeUnit,
-                                              TimeCodes.timeCode(from, 0),
-                                              TimeCodes.timeCode(till, 235959),
-                                              timeFilter);
-        if (timeframe != providerTimeframe || timeUnit != providerTimeUnit) {
-            ps.print(" " + series.length() + " ->");
-            series = series.compressedCandles(timeframe, timeUnit);
-        }
+        final FinSeries series = candleDataProvider
+                .from(from)
+                .till(till)
+                .timeFilter(timeFilter)
+                .getSeries(secPrefix)
+                .compressedCandles(timeframe, timeUnit);
         ps.println(" " + series.length() + " candles (" + timeframe + getTimeUnitLetter(timeUnit) + ").");
         marketDataMap.put(secPrefix, series);
     }
 
-    private void loadFuturesData(final String secPrefix, final int from, final int till, final LongPredicate timeFilter) throws IOException {
+    private void loadFuturesData(final String secPrefix) throws IOException {
         for (final Futures f : Futures.withPrefix(secPrefix)) {
             int futFrom = Math.max(from, f.previousExpiry);
             if (futuresOverlapDays > 0) {
@@ -435,14 +448,12 @@ public abstract class MultiSecurityTest {
             final int futTill = Math.min(till, f.oneDayBeforeExpiry);
             if (futFrom < futTill) {
                 ps.print("Loading " + f.shortCode + " " + futFrom + "-" + futTill + "...");
-                FinSeries series = provider.getSeries(f.shortCode, providerTimeframe, providerTimeUnit,
-                                                      TimeCodes.timeCode(futFrom, 0),
-                                                      TimeCodes.timeCode(futTill, 235959),
-                                                      timeFilter);
-                if (timeframe != providerTimeframe || timeUnit != providerTimeUnit) {
-                    ps.print(" " + series.length() + " ->");
-                    series = series.compressedCandles(timeframe, timeUnit);
-                }
+                final FinSeries series = candleDataProvider
+                        .from(futFrom)
+                        .till(futTill)
+                        .timeFilter(timeFilter)
+                        .getSeries(f.shortCode)
+                        .compressedCandles(timeframe, timeUnit);
                 ps.println(" " + series.length() + " candles (" + timeframe + getTimeUnitLetter(timeUnit) + ").");
                 marketDataMap.put(f.shortCode, series);
             }
@@ -527,5 +538,9 @@ public abstract class MultiSecurityTest {
             id++;
         }
         return id;
+    }
+
+    private static int yyyymmdd(final LocalDate localDate) {
+        return localDate.getYear() * 10000 + localDate.getMonthValue() * 100 + localDate.getDayOfMonth();
     }
 }
