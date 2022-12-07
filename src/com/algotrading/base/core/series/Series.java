@@ -203,8 +203,10 @@ public class Series {
                 column.append(series.getIntColumn(column.name()));
             } else if (column instanceof StringColumn) {
                 column.append(series.getStringColumn(column.name()));
-            } else {
+            } else if (column instanceof Column<?>){
                 column.append(series.getColumn(column.name()));
+            } else {
+                throw new ClassCastException("Unknown column type: " + column.getClass());
             }
         }
         return this;
@@ -220,9 +222,10 @@ public class Series {
                 ((IntColumn) column).append(series.getIntColumn(column.name()).get(rowId));
             } else if (column instanceof StringColumn) {
                 ((StringColumn) column).append(series.getStringColumn(column.name()).get(rowId));
+            } else if (column instanceof Column<?>) {
+                ((Column<?>) column).append((Column<?>) series.getColumn(column.name()).get(rowId));
             } else {
-                //noinspection unchecked
-                ((Column) column).append(series.getColumn(column.name()).get(rowId));
+                throw new ClassCastException("Unknown column type: " + column.getClass());
             }
         }
         return this;
@@ -245,14 +248,15 @@ public class Series {
                 ((IntColumn) column).append(((IntValue) value).get());
             } else if (value instanceof StringValue) {
                 ((StringColumn) column).append(((StringValue) value).get());
-            } else {
+            } else if (value instanceof final Value<?> v) {
                 final Column c = (Column) column;
-                final Value<?> v = (Value<?>) value;
                 if (c.type().isInstance(v.get())) {
                     c.append(v.get());
                 } else {
-                    throw new ClassCastException("Column type " + c.type() + " mismatch value " + v);
+                    throw new ClassCastException("Column type " + c.type() + " mismatch value type" + v.get().getClass());
                 }
+            } else {
+                throw new ClassCastException("Unknown value type: " + value.getClass());
             }
         }
         return this;
@@ -277,8 +281,10 @@ public class Series {
                 sb.append(((IntColumn) column).get(index));
             } else if (column instanceof StringColumn) {
                 sb.append(((StringColumn) column).get(index));
-            } else {
+            } else if (column instanceof Column<?>){
                 sb.append(((Column<?>) column).get(index));
+            } else {
+                throw new ClassCastException("Unknown column type: " + column.getClass());
             }
             sb.append(separator);
         }
