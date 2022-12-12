@@ -76,7 +76,7 @@ public class UpdatableCandles {
      * @param period         период (таймфрейм)
      * @param unit           единица изменения
      * @param truncationSize граница количества свечей для урезания временного ряда
-     * @param targetSize     количество свечей после урезация временного ряда
+     * @param targetSize     количество свечей после урезания временного ряда
      */
     public UpdatableCandles(final LongUnaryOperator timeShift,
                             final LongPredicate timeFilter,
