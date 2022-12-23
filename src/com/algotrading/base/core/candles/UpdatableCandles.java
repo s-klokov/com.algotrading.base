@@ -1,6 +1,5 @@
 package com.algotrading.base.core.candles;
 
-import com.algotrading.base.core.TimeCodes;
 import com.algotrading.base.core.columns.ColumnUpdater;
 import com.algotrading.base.core.columns.DoubleColumn;
 import com.algotrading.base.core.columns.LongColumn;
@@ -8,10 +7,6 @@ import com.algotrading.base.core.series.FinSeries;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.function.LongPredicate;
-import java.util.function.LongUnaryOperator;
 
 /**
  * Реализация обновляемых свечей.
@@ -33,22 +28,6 @@ import java.util.function.LongUnaryOperator;
  */
 public class UpdatableCandles {
     /**
-     * Функция для реализации временного сдвига.
-     */
-    public final LongUnaryOperator timeShift;
-    /**
-     * Функция для фильтрации свечей по времени.
-     */
-    public final LongPredicate timeFilter;
-    /**
-     * Таймфрейм временного ряда.
-     */
-    public final int period;
-    /**
-     * Единица измерения таймфрейма.
-     */
-    public final TimeUnit unit;
-    /**
      * Количество свечей, достижение или превышение которого приводит к удалению
      * самых старых свечей временного ряда.
      */
@@ -59,7 +38,7 @@ public class UpdatableCandles {
      */
     public final int targetSize;
     /**
-     * Временной ряд свечей, возможно, с дополнительными колонками
+     * Временной ряд свечей, возможно, с дополнительными колонками.
      */
     public final FinSeries series = FinSeries.newCandles();
     /**
@@ -71,26 +50,12 @@ public class UpdatableCandles {
     /**
      * Конструктор.
      *
-     * @param timeShift      временной сдвиг
-     * @param timeFilter     временной фильтр
-     * @param period         период (таймфрейм)
-     * @param unit           единица изменения
      * @param truncationSize граница количества свечей для урезания временного ряда
      * @param targetSize     количество свечей после урезания временного ряда
      */
-    public UpdatableCandles(final LongUnaryOperator timeShift,
-                            final LongPredicate timeFilter,
-                            final int period, final TimeUnit unit,
-                            final int truncationSize,
-                            final int targetSize) {
-        this.timeShift = (timeShift == null) ? FinSeries.NO_TIME_SHIFT : timeShift;
-        this.timeFilter = (timeFilter == null) ? FinSeries.ALL : timeFilter;
-        this.period = period;
-        this.unit = Objects.requireNonNull(unit);
+    public UpdatableCandles(final int truncationSize, final int targetSize) {
         if (targetSize < 1 || truncationSize <= targetSize) {
-            throw new IllegalArgumentException(
-                    "targetSize = " + targetSize
-                    + ", truncationSize = " + truncationSize);
+            throw new IllegalArgumentException("targetSize = " + targetSize + ", truncationSize = " + truncationSize);
         }
         this.truncationSize = truncationSize;
         this.targetSize = targetSize;
@@ -104,39 +69,17 @@ public class UpdatableCandles {
     }
 
     /**
-     * Если это возможно, добавить к уже имеющимся свечам новые свечи, предварительно выполнив
-     * временной сдвиг, временную фильтрацию и компрессию.
+     * Если это возможно, добавить к уже имеющимся свечам новые свечи.
      * <p>
      * Если свечей ещё нет, их меньше трёх или временной диапазон новых свечей накрывает полностью
      * временной диапазон старых, то результатом будет временной ряд из новых свечей,
      * иначе новый набор должен содержать свечу, идентичную предпоследней свече имеющегося набора,
      * для проведения "склейки" данных.
      *
-     * @param newSeries           добавляемые свечи (исходный объект не изменяется при сдвиге, фильтрации и компрессии)
-     * @param shiftFilterCompress {@code true}, если надо выполнять сдвиг, фильтрацию и компрессию новых свечей,
-     *                            иначе {@code false}
-     * @return если операция добавления прошла успешно, то индекс в итоговом наборе,
-     * начиная с которого идут новые свечи, иначе -1
+     * @param newSeries добавляемые свечи
+     * @return в случае успеха возвращается индекс в итоговом наборе, начиная с которого идут новые свечи, иначе -1
      */
-    public int update(FinSeries newSeries, final boolean shiftFilterCompress) {
-        if (shiftFilterCompress) {
-            final LongUnaryOperator timeFrameStartFunction = timeCode -> TimeCodes.getTimeFrameStart(timeCode, period, unit);
-            final LongColumn timeCode = series.timeCode();
-            final int startIndex;
-            if (timeCode.length() < 3) {
-                startIndex = 0;
-            } else {
-                startIndex = getStartIndex(
-                        newSeries.timeCode(), timeShift, timeFilter, timeFrameStartFunction,
-                        timeCode.get(timeCode.length() - 2));
-                if (startIndex < 0) {
-                    return -1;
-                }
-            }
-            newSeries = newSeries.compressedCandles(
-                    timeShift, timeFilter, timeFrameStartFunction, startIndex
-            );
-        }
+    public int update(final FinSeries newSeries) {
         final FinSeries oldSeries = series;
         final LongColumn oldTimeCode = oldSeries.timeCode();
         final LongColumn newTimeCode = newSeries.timeCode();
@@ -189,10 +132,10 @@ public class UpdatableCandles {
         final DoubleColumn newClose = newSeries.close();
         final LongColumn newVolume = newSeries.volume();
         if (oldOpen.get(oldIndex) != newOpen.get(newIndex)
-            || oldHigh.get(oldIndex) != newHigh.get(newIndex)
-            || oldLow.get(oldIndex) != newLow.get(newIndex)
-            || oldClose.get(oldIndex) != newClose.get(newIndex)
-            || oldVolume.get(oldIndex) != newVolume.get(newIndex)) {
+                || oldHigh.get(oldIndex) != newHigh.get(newIndex)
+                || oldLow.get(oldIndex) != newLow.get(newIndex)
+                || oldClose.get(oldIndex) != newClose.get(newIndex)
+                || oldVolume.get(oldIndex) != newVolume.get(newIndex)) {
             return -1;
         }
         int len = oldTimeCode.length() - 2 + newTimeCode.length() - newIndex;
@@ -220,9 +163,9 @@ public class UpdatableCandles {
 
     private static boolean shouldReplaceSeries(final LongColumn oldTimeCode, final LongColumn newTimeCode) {
         return oldTimeCode.length() < 3
-               || (newTimeCode.length() > 0
-                   && newTimeCode.get(0) <= oldTimeCode.get(0)
-                   && newTimeCode.getLast() >= oldTimeCode.getLast());
+                || (newTimeCode.length() > 0
+                && newTimeCode.get(0) <= oldTimeCode.get(0)
+                && newTimeCode.getLast() >= oldTimeCode.getLast());
     }
 
     private boolean truncate() {
@@ -235,30 +178,8 @@ public class UpdatableCandles {
         return true;
     }
 
-    private static int getStartIndex(final LongColumn timeCode,
-                                     final LongUnaryOperator timeShift,
-                                     final LongPredicate timeFilter,
-                                     final LongUnaryOperator timeFrameStartFunction,
-                                     final long startValue) {
-        final int len = timeCode.length();
-        for (int i = 0; i < len; i++) {
-            long t = timeShift.applyAsLong(timeCode.get(i));
-            if (timeFilter.test(t)) {
-                t = timeFrameStartFunction.applyAsLong(t);
-                if (t == startValue) {
-                    return i;
-                }
-                if (t > startValue) {
-                    return -1;
-                }
-            }
-        }
-        return -1;
-    }
-
     /**
-     * Обновить последнюю или начать новую свечу; при этом сдвиг и фильтрация выполняются,
-     * а компрессия -- нет.
+     * Обновить последнюю или начать новую свечу.
      *
      * @param t время свечи
      * @param o значение Open
@@ -266,17 +187,12 @@ public class UpdatableCandles {
      * @param l значение Low
      * @param c значение Close
      * @param v значение Volume
-     * @return если операция обновления последней или добавления новой свечи прошла успешно
-     * (в том числе если ничего не изменилось из-за использования фильтрации),
+     * @return если операция обновления последней или добавления новой свечи прошла успешно,
      * то индекс в итоговом наборе, начиная с которого идут новые свечи, иначе -1
      */
-    public int update(long t, final double o, final double h, final double l, final double c, final long v) {
-        t = timeShift.applyAsLong(t);
+    public int update(final long t, final double o, final double h, final double l, final double c, final long v) {
         final LongColumn timeCode = series.timeCode();
         int len = timeCode.length();
-        if (!timeFilter.test(t)) {
-            return len - 1;
-        }
         if (len > 0 && t < timeCode.getLast()) {
             return -1;
         }
