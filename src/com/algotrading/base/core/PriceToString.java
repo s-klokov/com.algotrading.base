@@ -22,19 +22,18 @@ public final class PriceToString {
     public static String priceToString(final double price, final Locale locale) {
         if (price == Math.round(price)) {
             return Long.toString(Math.round(price));
+        }
+        final String priceString = String.format(locale, "%.8f", price);
+        int i = priceString.length() - 1;
+        while (i >= 0 && priceString.charAt(i) == '0') {
+            i--;
+        }
+        if (i == 0) {
+            return priceString;
+        } else if (priceString.charAt(i) == '.' || priceString.charAt(i) == ',') {
+            return priceString.substring(0, i);
         } else {
-            final String priceString = String.format(locale, "%.8f", price);
-            int i = priceString.length() - 1;
-            while (i >= 0 && priceString.charAt(i) == '0') {
-                i--;
-            }
-            if (i == 0) {
-                return priceString;
-            } else if (priceString.charAt(i) == '.') {
-                return priceString.substring(0, i);
-            } else {
-                return priceString.substring(0, i + 1);
-            }
+            return priceString.substring(0, i + 1);
         }
     }
 }
