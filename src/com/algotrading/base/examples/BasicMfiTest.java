@@ -53,9 +53,9 @@ class BasicMfiTest extends SingleSecurityTest {
                     .withCandleDataProvider(new CandleDataProvider(
                             new TimeframeCandleDataLocator(
                                     1, TimeUnit.MINUTES,
-                                    "D:/MarketData/Finam",
-                                    "D:/MarketData/Quik/Export",
-                                    "D:/MarketData/Quik/Archive"),
+                                    "M:/Finam",
+                                    "M:/Quik/Export",
+                                    "M:/Quik/Archive"),
                             new FinamSeriesReader()))
                     .withTimeframe(15, TimeUnit.MINUTES)
                     .withFuturesOverlapDays(10)

@@ -30,7 +30,7 @@ class CandlesExporter {
                         final int from, final int till) {
         final CandleDataProvider provider = new CandleDataProvider(
                 new TimeframeCandleDataLocator(1, TimeUnit.MINUTES,
-                        "D:/MarketData/Finam", "D:/MarketData/Quik/Export", "D:/MarketData/Quik/Archive"),
+                        "M:/Finam", "M:/Quik/Export", "M:/Quik/Archive"),
                 new FinamSeriesReader());
 
         System.out.println("Loading " + secCode + " " + from + "-" + till + "...");
