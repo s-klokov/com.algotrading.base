@@ -8,10 +8,14 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -22,76 +26,47 @@ public class EmailSender {
     public final String login;
     private final Session session;
 
-    public EmailSender(final String login,
-                       final String password,
-                       final String smtpAddress,
-                       final String smtpPort,
-                       final boolean useSsl,
-                       final boolean useTls) {
-        this.login = login;
-        session = Session.getInstance(new Properties() {{
-                                          put("mail.smtp.auth", "true");
-                                          if (useSsl) {
-                                              put("mail.smtp.socketFactory.port", smtpPort);
-                                              put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-                                              put("mail.smtp.socketFactory.fallback", "false");
-                                          }
-                                          if (useTls) {
-                                              put("mail.smtp.starttls.enable", "true");
-                                          }
-                                          put("mail.smtp.host", smtpAddress);
-                                          put("mail.smtp.port", smtpPort);
-                                      }},
-                                      new Authenticator() {
-                                          @Override
-                                          protected PasswordAuthentication getPasswordAuthentication() {
-                                              return new PasswordAuthentication(login, password);
-                                          }
-                                      });
+    /**
+     * Создать экземпляр класса для отправки почты.
+     *
+     * @param propertiesFileName имя файла с настройками
+     * @return экземпляр класса для отправки почты
+     * @throws IOException если произошла ошибка ввода-вывода при чтении файла настроек
+     */
+    public static EmailSender newInstance(final String propertiesFileName) throws IOException {
+        final Properties properties = new Properties();
+        try (final BufferedReader br = Files.newBufferedReader(Path.of(propertiesFileName))) {
+            properties.load(br);
+        }
+        return new EmailSender(properties);
     }
 
     /**
-     * Получить объект для отправки сообщений по email из файла конфигурации, имеющего вид:<br>
-     * login<br>
-     * password<br>
-     * smtpAddress<br>
-     * smtpPort<br>
-     * ssl/tls-строка<br>,
-     * где последняя строка содержит подстроку "ssl", если требуется использование ssl, и/или подстроку "tls",
-     * если требуется ипользование tls, или отсутствует, если использование ssl/tls не требуется.
+     * Создать экземпляр класса для отправки почты.
+     * <p>
+     * Пример файла настроек:
+     * <pre>
+     * mail.smtp.user = user@yandex.ru
+     * mail.smtp.password = pa$$W0rd
+     * mail.transport.protocol = smtps
+     * mail.smtp.host = smtp.yandex.ru
+     * mail.smtp.port = 465
+     * mail.smtp.ssl.enable = true
+     * mail.smtp.auth = true
+     * mail.smtp.ssl.trust=yandex.ru (для самоподписанных сертификатов)
+     * </pre>
      *
-     * @param configFileName имя файла с конфигурацией
-     * @return объект для отправки сообщений по email
-     * @throws IOException если произошла ошибка ввода-вывода при чтении конфигурационного файла
+     * @param properties файл с настройками
      */
-    public static EmailSender newInstance(final String configFileName) throws IOException {
-        try (final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(configFileName), StandardCharsets.UTF_8))) {
-            final String login = br.readLine();
-            if (login == null) {
-                throw new IOException("Login is null");
+    public EmailSender(final Properties properties) {
+        login = Objects.requireNonNull(properties.getProperty("mail.smtp.user"));
+        final String password = Objects.requireNonNull(properties.getProperty("mail.smtp.password"));
+        session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(login, password);
             }
-            final String password = br.readLine();
-            if (password == null) {
-                throw new IOException("Password is null");
-            }
-            final String smtpAddress = br.readLine();
-            if (smtpAddress == null) {
-                throw new IOException("smtpAddress is null");
-            }
-            final String smtpPort = br.readLine();
-            if (smtpPort == null) {
-                throw new IOException("smtpPort is null");
-            }
-            String useSslTls = br.readLine();
-            boolean useSsl = false;
-            boolean useTls = false;
-            if (useSslTls != null) {
-                useSslTls = useSslTls.toLowerCase();
-                useSsl = useSslTls.contains("ssl");
-                useTls = useSslTls.contains("tls");
-            }
-            return new EmailSender(login, password, smtpAddress, smtpPort, useSsl, useTls);
-        }
+        });
     }
 
     /**
