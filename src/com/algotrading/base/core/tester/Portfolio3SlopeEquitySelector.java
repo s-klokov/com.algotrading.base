@@ -5,7 +5,9 @@ import com.algotrading.base.core.columns.DoubleColumn;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.lib.fits.LinearTrendFit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Выбор трёх эквити из общей совокупности по критерию лучшего нормированного наклона портфеля.

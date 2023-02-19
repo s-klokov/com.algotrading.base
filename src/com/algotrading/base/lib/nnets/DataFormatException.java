@@ -1,4 +1,4 @@
-package com.algotrading.base.lib;
+package com.algotrading.base.lib.nnets;
 
 import java.io.IOException;
 

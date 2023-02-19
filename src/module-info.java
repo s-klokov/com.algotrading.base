@@ -1,8 +1,6 @@
 module com.algotrading.base {
-    requires java.mail;
     requires java.logging;
     requires json.simple;
-    requires activation;
     exports com.algotrading.base.core;
     exports com.algotrading.base.core.candles;
     exports com.algotrading.base.core.columns;

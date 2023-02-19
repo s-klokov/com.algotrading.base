@@ -1,7 +1,5 @@
 package com.algotrading.base.lib.nnets;
 
-import com.algotrading.base.lib.DataFormatException;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 
