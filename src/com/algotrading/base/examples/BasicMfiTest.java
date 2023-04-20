@@ -60,8 +60,8 @@ class BasicMfiTest extends SingleSecurityTest {
                     .withTimeframe(15, TimeUnit.MINUTES)
                     .withFuturesOverlapDays(10)
                     .withMarketCommission(SimpleCommission.ofPercent(0.01))
-                    .from(2015_01_01)
-                    .till(2021_03_31)
+                    .from(2016_01_01)
+                    .till(2021_12_31)
                     .timeFilter(FILTER_1000_1845)
                     .loadMarketData(secPrefix)
                     .optimize();
@@ -113,7 +113,7 @@ class BasicMfiTest extends SingleSecurityTest {
                     if (tester.getNetProfitPercent() / -tester.getMaxSysDrawDownPercent() > 3.0) {
                         counterRatio++;
                     }
-                    ps.printf("%.2f%%; %.2f%%; %d; %.2f; %.2f%%%n",
+                    ps.printf("%.2f; %.2f; %d; %.2f; %.2f%n",
                             tester.getNetProfitPercent(),
                             tester.getMaxSysDrawDownPercent(),
                             tester.getTradesCount(),
@@ -140,8 +140,8 @@ class BasicMfiTest extends SingleSecurityTest {
         ps.printf("%nWalkforward test started%n");
         final List<WalkforwardIndices> walkforwardIndices = WalkforwardIndices.getRegularWalkforwardIndices(
                 walkforward.timeCode(),
-                2016_01_01,
-                2021_03_31,
+                2017_01_01,
+                2021_12_31,
                 23_59_59,
                 Period.ofMonths(3),
                 Period.ofYears(1)
