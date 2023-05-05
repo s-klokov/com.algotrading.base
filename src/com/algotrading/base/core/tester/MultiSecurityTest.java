@@ -6,7 +6,9 @@ import com.algotrading.base.core.columns.LongColumn;
 import com.algotrading.base.core.commission.Commission;
 import com.algotrading.base.core.commission.SimpleCommission;
 import com.algotrading.base.core.marketdata.CandleDataProvider;
-import com.algotrading.base.core.marketdata.Futures;
+import com.algotrading.base.core.marketdata.futures.Futures;
+import com.algotrading.base.core.marketdata.futures.FuturesExchange;
+import com.algotrading.base.core.marketdata.futures.MoexFuturesExchange;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.sync.Synchronizer;
 
@@ -29,6 +31,10 @@ public abstract class MultiSecurityTest {
      * Провайдер свечных данных.
      */
     protected CandleDataProvider candleDataProvider = null;
+    /**
+     * Информация о фьючерсах.
+     */
+    protected FuturesExchange futuresExchange = MoexFuturesExchange.INSTANCE;
     /**
      * Нужно ли детектировать фьючерсы по их префиксу.
      */
@@ -100,6 +106,11 @@ public abstract class MultiSecurityTest {
     public MultiSecurityTest withCandleDataProvider(final CandleDataProvider candleDataProvider) {
         this.candleDataProvider = candleDataProvider;
         marketDataMap.clear();
+        return this;
+    }
+
+    public MultiSecurityTest withFuturesExchange(final FuturesExchange futuresExchange) {
+        this.futuresExchange = futuresExchange;
         return this;
     }
 
@@ -254,7 +265,7 @@ public abstract class MultiSecurityTest {
             throw new IllegalArgumentException("Market data already loaded for " + secPrefix);
         }
         prefixList.add(secPrefix);
-        if (!enableFuturesPrefix || Futures.byPrefix(secPrefix).length == 0) {
+        if (!enableFuturesPrefix || futuresExchange.byPrefix(secPrefix) == null) {
             loadStockData(secPrefix);
         } else {
             loadFuturesData(secPrefix);
@@ -411,7 +422,7 @@ public abstract class MultiSecurityTest {
             if (!Futures.isFutures(secCode)) { // не фьючерс
                 map.put(secCode, secCode);
             } else { // фьючерс
-                final Futures f = Futures.byShortCode(secCode);
+                final Futures f = futuresExchange.byShortCode(secCode);
                 if (!map.containsKey(f.prefix)) {
                     if (hhmm < hhmmSwitch && yyyymmdd <= f.oneDayBeforeExpiry
                             || hhmm >= hhmmSwitch && yyyymmdd < f.oneDayBeforeExpiry) {
@@ -436,7 +447,7 @@ public abstract class MultiSecurityTest {
     }
 
     private void loadFuturesData(final String secPrefix) throws IOException {
-        for (final Futures f : Futures.byPrefix(secPrefix)) {
+        for (final Futures f : futuresExchange.byPrefix(secPrefix).values()) {
             int futFrom = Math.max(from, f.previousExpiry);
             if (futuresOverlapDays > 0) {
                 final int dd = futFrom % 100;

@@ -2,7 +2,9 @@ package com.algotrading.base.core.marketdata.futures;
 
 public final class MoexFuturesExchange extends FuturesExchange {
 
-    public MoexFuturesExchange() {
+    public static final MoexFuturesExchange INSTANCE = new MoexFuturesExchange();
+
+    private MoexFuturesExchange() {
 
         addFuturesMap(new FuturesMapBuilder("RI")
                 .put("RTS-3.11", "RIH11", 20110315, 20110314, 20101215)

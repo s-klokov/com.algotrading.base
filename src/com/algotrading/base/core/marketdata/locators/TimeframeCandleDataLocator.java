@@ -1,6 +1,6 @@
 package com.algotrading.base.core.marketdata.locators;
 
-import com.algotrading.base.core.marketdata.Futures;
+import com.algotrading.base.core.marketdata.futures.Futures;
 
 import java.io.File;
 import java.time.LocalDate;

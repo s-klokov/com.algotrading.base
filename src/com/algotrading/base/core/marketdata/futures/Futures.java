@@ -2,7 +2,7 @@ package com.algotrading.base.core.marketdata.futures;
 
 import java.time.LocalDate;
 
-public class Fut {
+public class Futures {
 
     public final String prefix;
     public final String longCode;
@@ -14,12 +14,12 @@ public class Fut {
     public final LocalDate oneDayBeforeExpiryDate;
     public final LocalDate previousExpiryDate;
 
-    protected Fut(final String prefix,
-                  final String longCode,
-                  final String shortCode,
-                  final int expiry,
-                  final int oneDayBeforeExpiry,
-                  final int previousExpiry) {
+    protected Futures(final String prefix,
+                      final String longCode,
+                      final String shortCode,
+                      final int expiry,
+                      final int oneDayBeforeExpiry,
+                      final int previousExpiry) {
         this.prefix = prefix;
         this.longCode = longCode;
         this.shortCode = shortCode;

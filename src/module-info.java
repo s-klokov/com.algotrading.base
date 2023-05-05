@@ -22,6 +22,7 @@ module com.algotrading.base {
     exports com.algotrading.base.lib.optim;
     exports com.algotrading.base.lib.stat;
     exports com.algotrading.base.util;
-    exports com.algotrading.base.core.marketdata.readers;
+    exports com.algotrading.base.core.marketdata.futures;
     exports com.algotrading.base.core.marketdata.locators;
+    exports com.algotrading.base.core.marketdata.readers;
 }

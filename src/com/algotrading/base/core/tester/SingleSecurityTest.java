@@ -3,7 +3,9 @@ package com.algotrading.base.core.tester;
 import com.algotrading.base.core.commission.Commission;
 import com.algotrading.base.core.commission.SimpleCommission;
 import com.algotrading.base.core.marketdata.CandleDataProvider;
-import com.algotrading.base.core.marketdata.Futures;
+import com.algotrading.base.core.marketdata.futures.Futures;
+import com.algotrading.base.core.marketdata.futures.FuturesExchange;
+import com.algotrading.base.core.marketdata.futures.MoexFuturesExchange;
 import com.algotrading.base.core.series.FinSeries;
 
 import java.io.IOException;
@@ -26,6 +28,10 @@ public abstract class SingleSecurityTest {
      * Провайдер свечных данных.
      */
     protected CandleDataProvider candleDataProvider = null;
+    /**
+     * Информация о фьючерсах.
+     */
+    protected FuturesExchange futuresExchange = MoexFuturesExchange.INSTANCE;
     /**
      * Код акции или префикс фьючерса.
      */
@@ -94,6 +100,11 @@ public abstract class SingleSecurityTest {
     public SingleSecurityTest withCandleDataProvider(final CandleDataProvider candleDataProvider) {
         this.candleDataProvider = candleDataProvider;
         marketDataMap.clear();
+        return this;
+    }
+
+    public SingleSecurityTest withFuturesExchange(final FuturesExchange futuresExchange) {
+        this.futuresExchange = futuresExchange;
         return this;
     }
 
@@ -175,7 +186,7 @@ public abstract class SingleSecurityTest {
     public SingleSecurityTest loadMarketData(final String secPrefix) throws IOException {
         this.secPrefix = secPrefix;
         marketDataMap.clear();
-        if (!enableFuturesPrefix || Futures.byPrefix(this.secPrefix).length == 0) {
+        if (!enableFuturesPrefix || futuresExchange.byPrefix(secPrefix) == null) {
             loadStockData();
         } else {
             loadFuturesData();
@@ -338,7 +349,7 @@ public abstract class SingleSecurityTest {
     }
 
     private void loadFuturesData() throws IOException {
-        for (final Futures f : Futures.byPrefix(secPrefix)) {
+        for (final Futures f : futuresExchange.byPrefix(secPrefix).values()) {
             int futFrom = Math.max(from, f.previousExpiry);
             if (futuresOverlapDays > 0) {
                 final int dd = futFrom % 100;

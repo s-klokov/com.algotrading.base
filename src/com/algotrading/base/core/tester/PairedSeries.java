@@ -2,7 +2,7 @@ package com.algotrading.base.core.tester;
 
 import com.algotrading.base.core.columns.DoubleColumn;
 import com.algotrading.base.core.columns.LongColumn;
-import com.algotrading.base.core.marketdata.Futures;
+import com.algotrading.base.core.marketdata.futures.Futures;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.sync.Synchronizer;
 
@@ -81,8 +81,8 @@ public class PairedSeries {
      */
     public static List<PairedSeries> getPairedSeriesList(final Map<String, FinSeries> marketDataMap,
                                                          final String secA, final String secB) {
-        final boolean isFutA = Futures.byPrefix(secA).length > 0;
-        final boolean isFutB = Futures.byPrefix(secB).length > 0;
+        final boolean isFutA = Futures.isFutures(secA);
+        final boolean isFutB = Futures.isFutures(secB);
 
         final List<PairedSeries> pairedSeriesList = new ArrayList<>();
 

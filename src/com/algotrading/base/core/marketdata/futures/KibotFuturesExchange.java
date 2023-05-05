@@ -2,7 +2,9 @@ package com.algotrading.base.core.marketdata.futures;
 
 public final class KibotFuturesExchange extends FuturesExchange {
 
-    public KibotFuturesExchange() {
+    public static final KibotFuturesExchange INSTANCE = new KibotFuturesExchange();
+
+    private KibotFuturesExchange() {
 
         // TODO:
 

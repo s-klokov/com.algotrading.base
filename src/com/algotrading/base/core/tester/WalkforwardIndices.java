@@ -2,7 +2,7 @@ package com.algotrading.base.core.tester;
 
 import com.algotrading.base.core.TimeCodes;
 import com.algotrading.base.core.columns.LongColumn;
-import com.algotrading.base.core.marketdata.Futures;
+import com.algotrading.base.core.marketdata.futures.Futures;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -39,7 +39,7 @@ public class WalkforwardIndices {
             this.tradeTo = tradeTo;
         } else {
             throw new IllegalArgumentException("Invalid indices: " + optFrom + ", " + optTo
-                                               + ", " + tradeFrom + ", " + tradeTo);
+                    + ", " + tradeFrom + ", " + tradeTo);
         }
     }
 
@@ -113,17 +113,16 @@ public class WalkforwardIndices {
      * @param timeCode            колонка с метками времени из временного ряда эквити
      * @param from                дата начало периода торговли в формате YYYYMMDD
      * @param till                дата конца периода торговли в формате YYYYMMDD
-     * @param futuresPrefix       префикс фьючерса
+     * @param futures             используемый массив фьючерсов
      * @param optimizationFutures количество прошлых фьючерсов для оптимизации
      * @return список индексов для walkforward-теста
      */
     public static List<WalkforwardIndices> getFuturesWalkforwardIndices(final LongColumn timeCode,
                                                                         final int from,
                                                                         final int till,
-                                                                        final String futuresPrefix,
+                                                                        final Futures[] futures,
                                                                         final int optimizationFutures) {
         final List<WalkforwardIndices> list = new ArrayList<>();
-        final Futures[] futures = Futures.byPrefix(futuresPrefix);
         for (int i = optimizationFutures; i < futures.length; i++) {
             final Futures f = futures[i];
             final int futFrom = Math.max(from, f.previousExpiry);
