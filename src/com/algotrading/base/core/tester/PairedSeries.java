@@ -81,8 +81,8 @@ public class PairedSeries {
      */
     public static List<PairedSeries> getPairedSeriesList(final Map<String, FinSeries> marketDataMap,
                                                          final String secA, final String secB) {
-        final boolean isFutA = Futures.withPrefix(secA).length > 0;
-        final boolean isFutB = Futures.withPrefix(secB).length > 0;
+        final boolean isFutA = Futures.byPrefix(secA).length > 0;
+        final boolean isFutB = Futures.byPrefix(secB).length > 0;
 
         final List<PairedSeries> pairedSeriesList = new ArrayList<>();
 

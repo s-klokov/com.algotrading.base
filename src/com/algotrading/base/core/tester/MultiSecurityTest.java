@@ -254,7 +254,7 @@ public abstract class MultiSecurityTest {
             throw new IllegalArgumentException("Market data already loaded for " + secPrefix);
         }
         prefixList.add(secPrefix);
-        if (!enableFuturesPrefix || Futures.withPrefix(secPrefix).length == 0) {
+        if (!enableFuturesPrefix || Futures.byPrefix(secPrefix).length == 0) {
             loadStockData(secPrefix);
         } else {
             loadFuturesData(secPrefix);
@@ -436,7 +436,7 @@ public abstract class MultiSecurityTest {
     }
 
     private void loadFuturesData(final String secPrefix) throws IOException {
-        for (final Futures f : Futures.withPrefix(secPrefix)) {
+        for (final Futures f : Futures.byPrefix(secPrefix)) {
             int futFrom = Math.max(from, f.previousExpiry);
             if (futuresOverlapDays > 0) {
                 final int dd = futFrom % 100;

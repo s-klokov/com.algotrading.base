@@ -997,7 +997,7 @@ public enum Futures {
     SFZ22("SPYF-12.22", "SFZ22", "SF", 20221216, 20221215, 20220916),
 
     SFH3("SPYF-3.23", "SFH3", "SF", 20230317, 20230316, 20221216),
-    SFM3("SPYF-6.23", "SFM3", "SP", 20230616, 20230615, 20230317),
+    SFM3("SPYF-6.23", "SFM3", "SF", 20230616, 20230615, 20230317),
 
     // E-mini S&P 500 futures
     ESH11("ESH11", "ESH11", "ES", 20110318, 20110317, 20101217),
@@ -1081,7 +1081,7 @@ public enum Futures {
      * @param prefix префикс
      * @return массив фьючерсов с указанным префиксом
      */
-    public static Futures[] withPrefix(final String prefix) {
+    public static Futures[] byPrefix(final String prefix) {
         final Futures[] allFutures = values();
         int n = 0;
         for (final Futures f : allFutures) {

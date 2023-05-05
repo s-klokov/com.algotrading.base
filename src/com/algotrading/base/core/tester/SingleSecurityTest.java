@@ -175,7 +175,7 @@ public abstract class SingleSecurityTest {
     public SingleSecurityTest loadMarketData(final String secPrefix) throws IOException {
         this.secPrefix = secPrefix;
         marketDataMap.clear();
-        if (!enableFuturesPrefix || Futures.withPrefix(this.secPrefix).length == 0) {
+        if (!enableFuturesPrefix || Futures.byPrefix(this.secPrefix).length == 0) {
             loadStockData();
         } else {
             loadFuturesData();
@@ -338,7 +338,7 @@ public abstract class SingleSecurityTest {
     }
 
     private void loadFuturesData() throws IOException {
-        for (final Futures f : Futures.withPrefix(secPrefix)) {
+        for (final Futures f : Futures.byPrefix(secPrefix)) {
             int futFrom = Math.max(from, f.previousExpiry);
             if (futuresOverlapDays > 0) {
                 final int dd = futFrom % 100;

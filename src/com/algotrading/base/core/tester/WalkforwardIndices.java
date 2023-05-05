@@ -123,7 +123,7 @@ public class WalkforwardIndices {
                                                                         final String futuresPrefix,
                                                                         final int optimizationFutures) {
         final List<WalkforwardIndices> list = new ArrayList<>();
-        final Futures[] futures = Futures.withPrefix(futuresPrefix);
+        final Futures[] futures = Futures.byPrefix(futuresPrefix);
         for (int i = optimizationFutures; i < futures.length; i++) {
             final Futures f = futures[i];
             final int futFrom = Math.max(from, f.previousExpiry);
