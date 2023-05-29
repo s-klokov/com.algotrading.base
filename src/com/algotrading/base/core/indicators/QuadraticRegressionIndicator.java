@@ -67,9 +67,8 @@ public class QuadraticRegressionIndicator {
                 y[k++] = c;
             }
             final QuadraticTrendFit fit = QuadraticTrendFit.fit(x, y);
-            final double multiplier = length / Math.sqrt(fit.mse);
-            final double velocity = (fit.b + 2 * fit.c * middle) * multiplier;
-            final double acceleration = 2 * fit.c * multiplier;
+            final double velocity = (fit.b + 2 * fit.c * middle) * length / Math.sqrt(fit.mse);
+            final double acceleration = 2 * fit.c * length * length / Math.sqrt(fit.mse);
             velocityColumn.set(i, velocity);
             accelerationColumn.set(i, acceleration);
         }
