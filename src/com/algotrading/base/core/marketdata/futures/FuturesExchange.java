@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Информация о фьючерсах на бирже.
  */
-public class FuturesExchange {
+public abstract class FuturesExchange {
 
     /**
      * Соответствие: префикс фьючерса -> соответствие: короткий код -> объект, описывающий фьючерс.
