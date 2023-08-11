@@ -44,11 +44,12 @@ class BasicMfiTest extends SingleSecurityTest {
     private long tLast = 0L;
 
     public static void main(final String[] args) {
-        final String secPrefix =
-//                "SBER";
-                "RI";
         try {
             new BasicMfiTest()
+                    .withSecPrefix(
+//                            "SBER"
+                            "RI"
+                    )
                     .withCapital(100_000_000)
                     .withCandleDataProvider(new CandleDataProvider(
                             new TimeframeCandleDataLocator(
@@ -63,7 +64,7 @@ class BasicMfiTest extends SingleSecurityTest {
                     .from(2016_01_01)
                     .till(2021_12_31)
                     .timeFilter(FILTER_1000_1845)
-                    .loadMarketData(secPrefix)
+                    .loadMarketData()
                     .optimize();
 //                    .runTest(TestOption.Summary, TestOption.EquityAndCapitalDaily);
         } catch (final IOException | RuntimeException e) {

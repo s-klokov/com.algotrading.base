@@ -108,6 +108,11 @@ public abstract class SingleSecurityTest {
         return this;
     }
 
+    public SingleSecurityTest withSecPrefix(final String secPrefix) {
+        this.secPrefix = secPrefix;
+        return this;
+    }
+
     public SingleSecurityTest withTimeframe(final int timeframe, final TimeUnit timeUnit) {
         if (timeUnit == TimeUnit.SECONDS
                 || timeUnit == TimeUnit.MINUTES
@@ -177,14 +182,12 @@ public abstract class SingleSecurityTest {
     }
 
     /**
-     * Загрузить рыночные данные.
+     * Загрузить рыночные данные для инструмента, имеющего {@link #secPrefix}.
      *
-     * @param secPrefix код акции или префикс фьючерса
      * @return этот объект
      * @throws IOException если произошла ошибка ввода-вывода
      */
-    public SingleSecurityTest loadMarketData(final String secPrefix) throws IOException {
-        this.secPrefix = secPrefix;
+    public SingleSecurityTest loadMarketData() throws IOException {
         marketDataMap.clear();
         if (!enableFuturesPrefix || futuresExchange.byPrefix(secPrefix) == null) {
             loadStockData();
@@ -306,18 +309,13 @@ public abstract class SingleSecurityTest {
      * @return буквенное сокращение
      */
     protected String getTimeUnitLetter(final TimeUnit timeUnit) {
-        switch (timeUnit) {
-            case SECONDS:
-                return "s";
-            case MINUTES:
-                return "m";
-            case HOURS:
-                return "H";
-            case DAYS:
-                return "D";
-            default:
-                return "";
-        }
+        return switch (timeUnit) {
+            case SECONDS -> "s";
+            case MINUTES -> "m";
+            case HOURS -> "H";
+            case DAYS -> "D";
+            default -> "";
+        };
     }
 
     /**
