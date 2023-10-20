@@ -1070,5 +1070,13 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .build()
         );
 
+        addFuturesMap(new FuturesMapBuilder("NA")
+                .put("NASD-3.23", "NAH3", 20230317, 20230316, 20221216)
+                .put("NASD-6.23", "NAM3", 20230616, 20230615, 20230317)
+                .put("NASD-9.23", "NAU3", 20230915, 20230914, 20230616)
+                .put("NASD-12.23", "NAZ3", 20231215, 20231214, 20230915)
+                .build()
+        );
+
     }
 }
