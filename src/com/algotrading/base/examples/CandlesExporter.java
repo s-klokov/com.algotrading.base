@@ -8,9 +8,11 @@ import com.algotrading.base.core.marketdata.locators.TimeframeCandleDataLocator;
 import com.algotrading.base.core.marketdata.readers.FinamSeriesReader;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.helpers.IOHelper;
+import com.simpleutils.UserProperties;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,7 +32,9 @@ class CandlesExporter {
                         final int from, final int till) {
         final CandleDataProvider provider = new CandleDataProvider(
                 new TimeframeCandleDataLocator(1, TimeUnit.MINUTES,
-                        "M:/Finam", "M:/Quik/Export", "M:/Quik/Archive"),
+                        Path.of(UserProperties.get("marketData"), "Finam").toString(),
+                        Path.of(UserProperties.get("marketData"), "Quik/Export").toString(),
+                        Path.of(UserProperties.get("marketData"), "Quik/Archive").toString()),
                 new FinamSeriesReader());
 
         System.out.println("Loading " + secCode + " " + from + "-" + till + "...");

@@ -9,8 +9,10 @@ import com.algotrading.base.core.marketdata.locators.TimeframeCandleDataLocator;
 import com.algotrading.base.core.marketdata.readers.FinamSeriesReader;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.tester.*;
+import com.simpleutils.UserProperties;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,9 +56,9 @@ class BasicMfiTest extends SingleSecurityTest {
                     .withCandleDataProvider(new CandleDataProvider(
                             new TimeframeCandleDataLocator(
                                     1, TimeUnit.MINUTES,
-                                    "M:/Finam",
-                                    "M:/Quik/Export",
-                                    "M:/Quik/Archive"),
+                                    Path.of(UserProperties.get("marketData"), "Finam").toString(),
+                                    Path.of(UserProperties.get("marketData"), "Quik/Export").toString(),
+                                    Path.of(UserProperties.get("marketData"), "Quik/Archive").toString()),
                             new FinamSeriesReader()))
                     .withTimeframe(15, TimeUnit.MINUTES)
                     .withFuturesOverlapDays(10)
