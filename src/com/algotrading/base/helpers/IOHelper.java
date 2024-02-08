@@ -2,7 +2,8 @@ package com.algotrading.base.helpers;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,8 +113,13 @@ public class IOHelper {
     public static List<String> getResponse(final String request, final int timeout) {
         final List<String> lines = new ArrayList<>();
         try {
-            final URL url = new URL(request);
-            final HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            final URI uri;
+            try {
+                uri = new URI(request);
+            } catch (final URISyntaxException e) {
+                throw new IOException("Incorrect request string", e);
+            }
+            final HttpURLConnection con = (HttpURLConnection) uri.toURL().openConnection();
             con.setConnectTimeout(timeout);
             con.setReadTimeout(timeout);
             con.connect();
