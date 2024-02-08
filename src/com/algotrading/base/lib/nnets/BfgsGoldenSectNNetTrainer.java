@@ -144,6 +144,6 @@ public class BfgsGoldenSectNNetTrainer extends GoldenSectNNetTrainer {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "GoldenSectNNetTrainer: defaultCycles = %d, mu = %.4f", maxCycles, mu);
+        return String.format(Locale.US, "BfgsGoldenSectNNetTrainer: defaultCycles = %d, mu = %.4f", maxCycles, mu);
     }
 }

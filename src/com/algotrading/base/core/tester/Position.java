@@ -91,7 +91,7 @@ public class Position {
      * @return {@code true}, если имеются активные заявки.
      */
     public boolean hasActiveOrders() {
-        return activeOrders.size() > 0;
+        return !activeOrders.isEmpty();
     }
 
     /**

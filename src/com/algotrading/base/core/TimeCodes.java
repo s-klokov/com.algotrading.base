@@ -387,7 +387,6 @@ public class TimeCodes {
      *                 {@link TimeUnit#SECONDS}) или {@link TimeUnit#DAYS}
      * @return временная метка начала таймфрейма
      */
-    @SuppressWarnings("EnhancedSwitchMigration")
     public static long getTimeFrameStart(final long timeCode, final int period, final TimeUnit unit) {
         switch (unit) {
             case DAYS:
@@ -433,7 +432,6 @@ public class TimeCodes {
      *                 или {@link TimeUnit#SECONDS})
      * @return временная метка конца таймфрейма
      */
-    @SuppressWarnings("EnhancedSwitchMigration")
     public static long getTimeFrameEnd(final long timeCode, final int period, final TimeUnit unit) {
         switch (unit) {
             case DAYS:

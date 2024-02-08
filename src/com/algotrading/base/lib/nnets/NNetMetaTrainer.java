@@ -246,7 +246,7 @@ public class NNetMetaTrainer {
      */
     public NNet3L train(final ArrayList<NNetTrainer> trainers, final int cycles, final NNetData data, final PrintStream log) {
         int trainCycles = 5;
-        final int maxCycles = trainers.get(0).maxCycles;
+        final int maxCycles = trainers.getFirst().maxCycles;
         final int trainCyclesInc = (int) (Math.floor(((2.0 * maxCycles) / cycles - 2.0 * trainCycles) / (cycles - 1.0)));
 
         final int numKills = trainers.size() / cycles;
@@ -267,7 +267,7 @@ public class NNetMetaTrainer {
             Collections.sort(trainers);
             if (log != null) log.println();
             for (int k = 0; k < numKills && trainers.size() > 1; k++) {
-                final NNetTrainer trainer = trainers.remove(trainers.size() - 1);
+                final NNetTrainer trainer = trainers.removeLast();
                 final int n = trainer.net.getNumWeights();
                 killedVolume += n * trainer.getIterations();
                 if (log != null) {
@@ -303,7 +303,7 @@ public class NNetMetaTrainer {
                 log.printf("%nEstimated completion time %tF %<tT%n", remainingTime);
             }
         }
-        final NNet3L bestNet = trainers.get(0).net;
+        final NNet3L bestNet = trainers.getFirst().net;
         if (log != null) log.printf("%nTRAIN BEST NET %s...%n", bestNet);
         finishTrainer.initialize(bestNet, data);
         finishTrainer.train(0, log);

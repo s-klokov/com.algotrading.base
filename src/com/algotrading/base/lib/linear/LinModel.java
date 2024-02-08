@@ -64,20 +64,12 @@ public class LinModel {
         if (t.length != x.length) {
             throw new IllegalArgumentException("Data size mismatch");
         }
-        final LinModel linModel;
-        switch (degree) {
-            case 1:
-                linModel = new LinModel(hasIntercept, 1, 1, fit1(hasIntercept, t, x));
-                break;
-            case 2:
-                linModel = new LinModel(hasIntercept, 2, 1, fit2(hasIntercept, t, x));
-                break;
-            case 3:
-                linModel = new LinModel(hasIntercept, 3, 1, fit3(hasIntercept, t, x));
-                break;
-            default:
-                throw new UnsupportedOperationException();
-        }
+        final LinModel linModel = switch (degree) {
+            case 1 -> new LinModel(hasIntercept, 1, 1, fit1(hasIntercept, t, x));
+            case 2 -> new LinModel(hasIntercept, 2, 1, fit2(hasIntercept, t, x));
+            case 3 -> new LinModel(hasIntercept, 3, 1, fit3(hasIntercept, t, x));
+            default -> throw new UnsupportedOperationException();
+        };
         linModel.computeMse(t, x);
         return linModel;
     }
@@ -100,20 +92,12 @@ public class LinModel {
         if (t.length != x.length || t.length != y.length) {
             throw new IllegalArgumentException("Data size mismatch");
         }
-        final LinModel linModel;
-        switch (degree) {
-            case 1:
-                linModel = new LinModel(hasIntercept, 1, 2, fit1(hasIntercept, t, x, y));
-                break;
-            case 2:
-                linModel = new LinModel(hasIntercept, 2, 2, fit2(hasIntercept, t, x, y));
-                break;
-            case 3:
-                linModel = new LinModel(hasIntercept, 3, 2, fit3(hasIntercept, t, x, y));
-                break;
-            default:
-                throw new UnsupportedOperationException();
-        }
+        final LinModel linModel = switch (degree) {
+            case 1 -> new LinModel(hasIntercept, 1, 2, fit1(hasIntercept, t, x, y));
+            case 2 -> new LinModel(hasIntercept, 2, 2, fit2(hasIntercept, t, x, y));
+            case 3 -> new LinModel(hasIntercept, 3, 2, fit3(hasIntercept, t, x, y));
+            default -> throw new UnsupportedOperationException();
+        };
         linModel.computeMse(t, x, y);
         return linModel;
     }
@@ -137,19 +121,12 @@ public class LinModel {
         if (t.length != x.length || t.length != y.length) {
             throw new IllegalArgumentException("Data size mismatch");
         }
-        final LinModel linModel;
-        switch (degree) {
-            case 1:
-                linModel = new LinModel(hasIntercept, 1, 3, fit1(hasIntercept, t, x, y, z));
-                break;
-            case 2:
-                linModel = new LinModel(hasIntercept, 2, 3, fit2(hasIntercept, t, x, y, z));
-                break;
-            case 3:
-                // TODO:
-            default:
-                throw new UnsupportedOperationException();
-        }
+        final LinModel linModel = switch (degree) {
+            case 1 -> new LinModel(hasIntercept, 1, 3, fit1(hasIntercept, t, x, y, z));
+            case 2 -> new LinModel(hasIntercept, 2, 3, fit2(hasIntercept, t, x, y, z));
+            // TODO:
+            default -> throw new UnsupportedOperationException();
+        };
         linModel.computeMse(t, x, y, z);
         return linModel;
     }

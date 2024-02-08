@@ -357,18 +357,13 @@ public abstract class MultiSecurityTest {
      * @return буквенное сокращение
      */
     protected String getTimeUnitLetter(final TimeUnit timeUnit) {
-        switch (timeUnit) {
-            case SECONDS:
-                return "s";
-            case MINUTES:
-                return "m";
-            case HOURS:
-                return "H";
-            case DAYS:
-                return "D";
-            default:
-                return "";
-        }
+        return switch (timeUnit) {
+            case SECONDS -> "s";
+            case MINUTES -> "m";
+            case HOURS -> "H";
+            case DAYS -> "D";
+            default -> "";
+        };
     }
 
     /**
@@ -380,7 +375,7 @@ public abstract class MultiSecurityTest {
     protected String getEquityFileName(final String label, final int timeframe, final TimeUnit timeUnit) {
         final StringBuilder sb = new StringBuilder();
         sb.append(getClass().getSimpleName());
-        if (label != null && label.length() > 0) {
+        if (label != null && !label.isEmpty()) {
             sb.append('_').append(label);
         }
         sb.append('_').append(timeframe).append(getTimeUnitLetter(timeUnit)).append(".csv");

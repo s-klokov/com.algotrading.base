@@ -195,18 +195,13 @@ public class Series {
             throw new IllegalArgumentException("Columns mismatch in " + this + " and " + series);
         }
         for (final AbstractColumn column : columnMap.values()) {
-            if (column instanceof DoubleColumn) {
-                column.append(series.getDoubleColumn(column.name()));
-            } else if (column instanceof LongColumn) {
-                column.append(series.getLongColumn(column.name()));
-            } else if (column instanceof IntColumn) {
-                column.append(series.getIntColumn(column.name()));
-            } else if (column instanceof StringColumn) {
-                column.append(series.getStringColumn(column.name()));
-            } else if (column instanceof Column<?>){
-                column.append(series.getColumn(column.name()));
-            } else {
-                throw new ClassCastException("Unknown column type: " + column.getClass());
+            switch (column) {
+                case final DoubleColumn doubleColumn -> doubleColumn.append(series.getDoubleColumn(column.name()));
+                case final LongColumn longColumn -> longColumn.append(series.getLongColumn(column.name()));
+                case final IntColumn intColumn -> intColumn.append(series.getIntColumn(column.name()));
+                case final StringColumn stringColumn -> stringColumn.append(series.getStringColumn(column.name()));
+                case final Column<?> objColumn -> objColumn.append(series.getColumn(column.name()));
+                case null, default -> throw new ClassCastException("Unknown column type: " + column.getClass());
             }
         }
         return this;
@@ -214,18 +209,13 @@ public class Series {
 
     public Series append(final Series series, final int rowId) {
         for (final AbstractColumn column : columnMap.values()) {
-            if (column instanceof DoubleColumn) {
-                ((DoubleColumn) column).append(series.getDoubleColumn(column.name()).get(rowId));
-            } else if (column instanceof LongColumn) {
-                ((LongColumn) column).append(series.getLongColumn(column.name()).get(rowId));
-            } else if (column instanceof IntColumn) {
-                ((IntColumn) column).append(series.getIntColumn(column.name()).get(rowId));
-            } else if (column instanceof StringColumn) {
-                ((StringColumn) column).append(series.getStringColumn(column.name()).get(rowId));
-            } else if (column instanceof Column<?>) {
-                ((Column<?>) column).append((Column<?>) series.getColumn(column.name()).get(rowId));
-            } else {
-                throw new ClassCastException("Unknown column type: " + column.getClass());
+            switch (column) {
+                case final DoubleColumn doubleColumn -> doubleColumn.append(series.getDoubleColumn(column.name()).get(rowId));
+                case final LongColumn longColumn -> longColumn.append(series.getLongColumn(column.name()).get(rowId));
+                case final IntColumn intColumn -> intColumn.append(series.getIntColumn(column.name()).get(rowId));
+                case final StringColumn stringColumn -> stringColumn.append(series.getStringColumn(column.name()).get(rowId));
+                case final Column<?> objColumn -> objColumn.append((Column<?>) series.getColumn(column.name()).get(rowId));
+                case null, default -> throw new ClassCastException("Unknown column type: " + column.getClass());
             }
         }
         return this;
@@ -240,23 +230,20 @@ public class Series {
         final Iterator<AbstractColumn> i = columnMap.values().iterator();
         for (final AbstractValue value : values) {
             final AbstractColumn column = i.next();
-            if (value instanceof DoubleValue) {
-                ((DoubleColumn) column).append(((DoubleValue) value).get());
-            } else if (value instanceof LongValue) {
-                ((LongColumn) column).append(((LongValue) value).get());
-            } else if (value instanceof IntValue) {
-                ((IntColumn) column).append(((IntValue) value).get());
-            } else if (value instanceof StringValue) {
-                ((StringColumn) column).append(((StringValue) value).get());
-            } else if (value instanceof final Value<?> v) {
-                final Column c = (Column) column;
-                if (c.type().isInstance(v.get())) {
-                    c.append(v.get());
-                } else {
-                    throw new ClassCastException("Column type " + c.type() + " mismatch value type" + v.get().getClass());
+            switch (value) {
+                case final DoubleValue doubleValue -> ((DoubleColumn) column).append(doubleValue.get());
+                case final LongValue longValue -> ((LongColumn) column).append(longValue.get());
+                case final IntValue intValue -> ((IntColumn) column).append(intValue.get());
+                case final StringValue stringValue -> ((StringColumn) column).append(stringValue.get());
+                case final Value<?> v -> {
+                    final Column c = (Column) column;
+                    if (c.type().isInstance(v.get())) {
+                        c.append(v.get());
+                    } else {
+                        throw new ClassCastException("Column type " + c.type() + " mismatch value type" + v.get().getClass());
+                    }
                 }
-            } else {
-                throw new ClassCastException("Unknown value type: " + value.getClass());
+                case null, default -> throw new ClassCastException("Unknown value type: " + value.getClass());
             }
         }
         return this;
@@ -273,18 +260,13 @@ public class Series {
     public String getAsString(final int index, final String separator) {
         final StringBuilder sb = new StringBuilder();
         for (final AbstractColumn column : columnMap.values()) {
-            if (column instanceof DoubleColumn) {
-                sb.append(((DoubleColumn) column).get(index));
-            } else if (column instanceof LongColumn) {
-                sb.append(((LongColumn) column).get(index));
-            } else if (column instanceof IntColumn) {
-                sb.append(((IntColumn) column).get(index));
-            } else if (column instanceof StringColumn) {
-                sb.append(((StringColumn) column).get(index));
-            } else if (column instanceof Column<?>){
-                sb.append(((Column<?>) column).get(index));
-            } else {
-                throw new ClassCastException("Unknown column type: " + column.getClass());
+            switch (column) {
+                case final DoubleColumn doubleColumn -> sb.append(doubleColumn.get(index));
+                case final LongColumn longColumn -> sb.append(longColumn.get(index));
+                case final IntColumn intColumn -> sb.append(intColumn.get(index));
+                case final StringColumn stringColumn -> sb.append(stringColumn.get(index));
+                case final Column<?> objColumn -> sb.append(objColumn.get(index));
+                case null, default -> throw new ClassCastException("Unknown column type: " + column.getClass());
             }
             sb.append(separator);
         }
