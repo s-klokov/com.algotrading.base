@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -12,7 +13,7 @@ import java.util.zip.ZipOutputStream;
 
 public class IOHelper {
 
-    private IOHelper(){
+    private IOHelper() {
         throw new UnsupportedOperationException();
     }
 
@@ -50,28 +51,6 @@ public class IOHelper {
     }
 
     /**
-     * Получить объект типа {@code BufferedReader} с кодировкой UTF-8.
-     *
-     * @param file файл
-     * @return объект типа {@code BufferedReader}
-     * @throws IOException если произошла ошибка ввода-вывода
-     */
-    public static BufferedReader getBufferedReader(final File file) throws IOException {
-        return new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
-    }
-
-    /**
-     * Получить объект типа {@code BufferedReader} с кодировкой UTF-8.
-     *
-     * @param fileName имя файла
-     * @return объект типа {@code BufferedReader}
-     * @throws IOException если произошла ошибка ввода-вывода
-     */
-    public static BufferedReader getBufferedReader(final String fileName) throws IOException {
-        return getBufferedReader(new File(fileName));
-    }
-
-    /**
      * Прочитать из файла все непустые строки и применить к каждой из них метод trim.
      *
      * @param fileName имя файла
@@ -91,7 +70,7 @@ public class IOHelper {
      */
     public static List<String> readNonEmptyTrimmedLines(final File file) throws IOException {
         final List<String> lines = new ArrayList<>();
-        try (final BufferedReader br = getBufferedReader(file)) {
+        try (final BufferedReader br = Files.newBufferedReader(file.toPath())) {
             String line;
             while ((line = br.readLine()) != null) {
                 line = line.trim();
