@@ -1014,7 +1014,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("GKMN-12.23", "GKZ23", 20231221, 20231220, 20230921)
 
                 .put("GMKN-3.24", "GKH4", 20240321, 20240320, 20231221)
-                .put("GMKN-6.24", "GKM4", 20240401, 20240329, 20240321) // Досрочное завершение
+                .put("GMKN-6.24", "GKM4", 20240329, 20240328, 20240321) // Досрочное завершение
                 .build()
         );
 
