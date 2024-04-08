@@ -48,9 +48,9 @@ public class Index {
      * @param indexColumnName название колонки, куда будет записано значение индекса
      * @return временной ряд со значениями индекса
      */
-    public FinSeries indexSeries(final Map<String, FinSeries> marketDataMap,
-                                 final WeightFunction weightFunction,
-                                 final String indexColumnName) {
+    public static FinSeries indexSeries(final Map<String, FinSeries> marketDataMap,
+                                        final WeightFunction weightFunction,
+                                        final String indexColumnName) {
         final FinSeries indexSeries = new FinSeries();
         final LongColumn indexTimeCode = indexSeries.acquireLongColumn(FinSeries.T);
         final DoubleColumn indexColumn = indexSeries.acquireDoubleColumn(indexColumnName);
@@ -97,5 +97,4 @@ public class Index {
 
         return indexSeries;
     }
-
 }
