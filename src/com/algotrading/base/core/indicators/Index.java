@@ -61,7 +61,7 @@ public class Index {
         double sumWeights, sumWeightedDeltas;
         double indexValue = 1.0;
         while (synchronizer.synchronize() != Long.MAX_VALUE) {
-            final long t = synchronizer.timeCode();
+            final long t = synchronizer.t();
             sumWeights = 0;
             sumWeightedDeltas = 0;
             for (final Map.Entry<String, FinSeries> entry : marketDataMap.entrySet()) {

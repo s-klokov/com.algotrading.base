@@ -203,7 +203,7 @@ public abstract class MultiSecurityTest {
                 final FinSeries alignedSeries = alignedMap.get(secCode);
                 final int i = synchronizer.getCurrIndex(series.timeCode());
                 if (i >= 0) {
-                    alignedSeries.timeCode().append(synchronizer.timeCode());
+                    alignedSeries.timeCode().append(synchronizer.t());
                     alignedSeries.open().append(series.open().get(i));
                     alignedSeries.high().append(series.high().get(i));
                     alignedSeries.low().append(series.low().get(i));
@@ -212,7 +212,7 @@ public abstract class MultiSecurityTest {
                 } else {
                     final double price = (alignedSeries.length() == 0) ?
                             series.open().get(0) : alignedSeries.close().getLast();
-                    alignedSeries.timeCode().append(synchronizer.timeCode());
+                    alignedSeries.timeCode().append(synchronizer.t());
                     alignedSeries.open().append(price);
                     alignedSeries.high().append(price);
                     alignedSeries.low().append(price);
@@ -521,7 +521,7 @@ public abstract class MultiSecurityTest {
             final FinSeries series = marketDataMap.get(secCode);
             final int id = synchronizer.getLastIndex(series.timeCode());
             final double price = series.close().get(id);
-            Tester.appendOrder(orders, synchronizer.timeCode(), secCode, volume, price, commission, comment);
+            Tester.appendOrder(orders, synchronizer.t(), secCode, volume, price, commission, comment);
         });
     }
 
@@ -535,7 +535,7 @@ public abstract class MultiSecurityTest {
             final FinSeries series = marketDataMap.get(secCode);
             final int id = synchronizer.getLastIndex(series.timeCode());
             final double price = series.close().get(getDayCloseId(series.timeCode(), id));
-            Tester.appendOrder(orders, synchronizer.timeCode(), secCode, volume, price, commission, comment);
+            Tester.appendOrder(orders, synchronizer.t(), secCode, volume, price, commission, comment);
         });
     }
 

@@ -121,7 +121,7 @@ public class PairedSeries {
                 pairedSeriesList.add(new PairedSeries(currSecCodeA, currSecCodeB, series));
             }
 
-            series.timeCode().append(synchronizer.timeCode());
+            series.timeCode().append(synchronizer.t());
             series.getDoubleColumn(CLOSE_A).append(closeA);
             series.getDoubleColumn(CLOSE_B).append(closeB);
 

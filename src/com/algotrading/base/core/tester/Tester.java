@@ -503,7 +503,7 @@ public class Tester {
 
     private void processOrders() {
         final int len = orders.length();
-        while (ordersIndex < len && orders.timeCode().get(ordersIndex) <= synchronizer.timeCode()) {
+        while (ordersIndex < len && orders.timeCode().get(ordersIndex) <= synchronizer.t()) {
             processOrder(ordersTimeCode.get(ordersIndex),
                          ordersSecurity.get(ordersIndex),
                          ordersVolume.get(ordersIndex),
@@ -567,7 +567,7 @@ public class Tester {
     private void processSeries() {
         double sumEquity = doneTradesProfit;
         double sumCapitalUsed = 0;
-        final long timeCode = synchronizer.timeCode();
+        final long timeCode = synchronizer.t();
         for (final TestTrade trade : activeTrades) {
             final int updatedIndex = synchronizer.getUpdatedIndex(trade.timeCodeColumn);
             if (updatedIndex >= 0) {

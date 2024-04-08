@@ -19,9 +19,9 @@ public class Synchronizer {
      */
     private final Map<LongColumn, Cursor> columns = new HashMap<>();
     /**
-     * Значение timeCode, по которому прошла последняя синхронизация.
+     * Значение t, по которому прошла последняя синхронизация.
      */
-    private long timeCode = 0L;
+    private long t = 0L;
 
     /**
      * Добавить колонку в синхронизатор.
@@ -40,7 +40,7 @@ public class Synchronizer {
             cursor.currIndex = -1;
             cursor.prevIndex = -1;
         }
-        timeCode = 0L;
+        t = 0L;
     }
 
     /**
@@ -49,13 +49,13 @@ public class Synchronizer {
      * @return значение timeCode по которому прошла синхронизация или {@link Long#MAX_VALUE}, если достигнут конец.
      */
     public long synchronize() {
-        timeCode = Long.MAX_VALUE;
+        t = Long.MAX_VALUE;
         for (final Map.Entry<LongColumn, Cursor> e : columns.entrySet()) {
             final LongColumn longColumn = e.getKey();
             final Cursor cursor = e.getValue();
             final int nextIndex = cursor.currIndex + 1;
             if (nextIndex < longColumn.length()) {
-                timeCode = Math.min(timeCode, longColumn.get(nextIndex));
+                t = Math.min(t, longColumn.get(nextIndex));
             }
         }
         for (final Map.Entry<LongColumn, Cursor> entry : columns.entrySet()) {
@@ -63,11 +63,11 @@ public class Synchronizer {
             final Cursor cursor = entry.getValue();
             cursor.prevIndex = cursor.currIndex;
             final int nextIndex = cursor.currIndex + 1;
-            if (nextIndex < longColumn.length() && longColumn.get(nextIndex) == timeCode) {
+            if (nextIndex < longColumn.length() && longColumn.get(nextIndex) == t) {
                 cursor.currIndex = nextIndex;
             }
         }
-        return timeCode;
+        return t;
     }
 
     /**
@@ -78,7 +78,7 @@ public class Synchronizer {
     public boolean isFullySynchronized() {
         for (final Map.Entry<LongColumn, Cursor> e : columns.entrySet()) {
             final int currIndex = e.getValue().currIndex;
-            if (currIndex == -1 || e.getKey().get(currIndex) != timeCode) {
+            if (currIndex == -1 || e.getKey().get(currIndex) != t) {
                 return false;
             }
         }
@@ -106,7 +106,7 @@ public class Synchronizer {
      */
     public int getCurrIndex(final LongColumn longColumn) {
         final Cursor cursor = columns.get(longColumn);
-        return (cursor == null || cursor.currIndex < 0 || longColumn.get(cursor.currIndex) != timeCode) ? -1 : cursor.currIndex;
+        return (cursor == null || cursor.currIndex < 0 || longColumn.get(cursor.currIndex) != t) ? -1 : cursor.currIndex;
     }
 
     /**
@@ -132,10 +132,10 @@ public class Synchronizer {
     }
 
     /**
-     * @return текущее значение {@link #timeCode}.
+     * @return текущее значение {@link #t}.
      */
-    public long timeCode() {
-        return timeCode;
+    public long t() {
+        return t;
     }
 
     private static class Cursor {
