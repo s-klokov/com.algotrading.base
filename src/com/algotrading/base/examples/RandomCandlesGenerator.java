@@ -5,10 +5,10 @@ import com.algotrading.base.core.columns.DoubleColumn;
 import com.algotrading.base.core.columns.LongColumn;
 import com.algotrading.base.core.csv.CsvWriter;
 import com.algotrading.base.core.series.FinSeries;
-import com.algotrading.base.helpers.IOHelper;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Random;
 
@@ -53,7 +53,7 @@ class RandomCandlesGenerator {
                 volume.append(v);
             }
         }
-        try (final PrintStream ps = IOHelper.getPrintStream("RND.csv")) {
+        try (final PrintStream ps = new PrintStream("RND.csv", StandardCharsets.UTF_8)) {
             new CsvWriter()
                     .header("<TICKER>;<PERIOD>;<DATE>;<TIME>;<OPEN>;<HIGH>;<LOW>;<CLOSE>;<VOLUME>")
                     .column("RND;1")

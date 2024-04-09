@@ -9,10 +9,10 @@ import com.algotrading.base.core.csv.CsvWriter;
 import com.algotrading.base.core.series.FinSeries;
 import com.algotrading.base.core.series.Series;
 import com.algotrading.base.core.sync.Synchronizer;
-import com.algotrading.base.helpers.IOHelper;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -172,7 +172,7 @@ public class Tester {
     }
 
     public static void writeEquity(final Series equity, final String fileName) throws IOException {
-        try (final PrintStream ps = IOHelper.getPrintStream(fileName)) {
+        try (final PrintStream ps = new PrintStream(fileName, StandardCharsets.UTF_8)) {
             new CsvWriter()
                     .locale(Locale.getDefault())
                     .header("Date;Time;Equity,%")
@@ -191,7 +191,7 @@ public class Tester {
     }
 
     public static void writeEquityAndCapitalUsed(final Series equity, final String fileName) throws IOException {
-        try (final PrintStream ps = IOHelper.getPrintStream(fileName)) {
+        try (final PrintStream ps = new PrintStream(fileName, StandardCharsets.UTF_8)) {
             new CsvWriter()
                     .locale(Locale.getDefault())
                     .header("Date;Time;Equity,%;CapitalUsed,%")

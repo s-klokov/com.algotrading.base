@@ -7,11 +7,11 @@ import com.algotrading.base.core.marketdata.CandleDataProvider;
 import com.algotrading.base.core.marketdata.locators.TimeframeCandleDataLocator;
 import com.algotrading.base.core.marketdata.readers.FinamSeriesReader;
 import com.algotrading.base.core.series.FinSeries;
-import com.algotrading.base.helpers.IOHelper;
 import com.simpleutils.UserProperties;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +38,7 @@ class CandlesExporter {
                 new FinamSeriesReader());
 
         System.out.println("Loading " + secCode + " " + from + "-" + till + "...");
-        try (final PrintStream ps = IOHelper.getPrintStream(secCode + "_" + from + "_" + till + "_" + timeframe + ".csv")) {
+        try (final PrintStream ps = new PrintStream(secCode + "_" + from + "_" + till + "_" + timeframe + ".csv", StandardCharsets.UTF_8)) {
             FinSeries series = provider.from(from).till(till).timeFilter(TimeFilters.FILTER_1000_1840).getSeries(secCode);
             if (timeframe != 1) {
                 series = series.compressedCandles(timeframe, TimeUnit.MINUTES);
