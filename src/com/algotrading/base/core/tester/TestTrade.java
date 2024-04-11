@@ -54,7 +54,7 @@ public class TestTrade {
     /**
      * Время последней сделки.
      */
-    public long lastTimeCode;
+    public long tLast;
     /**
      * Размер комиссии (неотрицательная величина).
      */
@@ -71,25 +71,25 @@ public class TestTrade {
     /**
      * Конструктор.
      *
-     * @param timeCode   время открытия трейда
+     * @param t          время открытия трейда
      * @param size       размер позиции
      * @param price      цена входа
      * @param commission комиссия
      */
-    TestTrade(final long timeCode, final String security, final double size, final double price, final double commission,
+    TestTrade(final long t, final String security, final double size, final double price, final double commission,
               final LongColumn timeCodeColumn, final DoubleColumn closeColumn) {
         this.security = security;
         if (Math.abs(size) <= EPS) {
             throw new IllegalArgumentException("Zero size");
         }
-        enterTimeCode = timeCode;
+        enterTimeCode = t;
         scaleInVolume = size;
         scaleInValue = size * price;
         scaleOutVolume = 0;
         scaleOutValue = 0;
         barsInTrade = 0;
         last = price;
-        lastTimeCode = timeCode;
+        tLast = t;
         this.commission = commission;
         this.timeCodeColumn = timeCodeColumn;
         this.closeColumn = closeColumn;
@@ -102,12 +102,12 @@ public class TestTrade {
     /**
      * Изменить трейд.
      *
-     * @param timeCode   время изменения трейда
+     * @param t   время изменения трейда
      * @param delta      приращение позиции
      * @param price      цена исполнения
      * @param commission комиссия
      */
-    void update(final long timeCode, final double delta, final double price, final double commission) {
+    void update(final long t, final double delta, final double price, final double commission) {
         if (Math.abs(delta) <= EPS) {
             throw new IllegalArgumentException("Zero delta");
         }
@@ -115,11 +115,11 @@ public class TestTrade {
         if (Math.abs(volume) <= EPS) {
             throw new IllegalStateException("Cannot update trade done");
         }
-        lastTimeCode = timeCode;
+        tLast = t;
         double newVolume = volume + delta;
         if (Math.abs(newVolume) <= EPS) {
             newVolume = 0;
-            exitTimeCode = timeCode;
+            exitTimeCode = t;
         }
         if (volume * newVolume < 0) {
             throw new IllegalArgumentException("Current volume = " + volume + ", delta = " + delta);
@@ -219,7 +219,7 @@ public class TestTrade {
                 isLong() ? "Long" : isShort() ? "Short" : "???",
                 TimeCodes.timeCodeString(enterTimeCode),
                 PriceToString.priceToString(getAvgInPrice(), Locale.US),
-                TimeCodes.timeCodeString(exitTimeCode == 0L ? lastTimeCode : exitTimeCode),
+                TimeCodes.timeCodeString(exitTimeCode == 0L ? tLast : exitTimeCode),
                 PriceToString.priceToString(getAvgOutPrice(), Locale.US),
                 getProfit(),
                 getProfitPercent(),
@@ -237,7 +237,7 @@ public class TestTrade {
                 isLong() ? "Long" : isShort() ? "Short" : "???",
                 TimeCodes.timeCodeString(enterTimeCode),
                 PriceToString.priceToString(getAvgInPrice()),
-                TimeCodes.timeCodeString(exitTimeCode == 0L ? lastTimeCode : exitTimeCode),
+                TimeCodes.timeCodeString(exitTimeCode == 0L ? tLast : exitTimeCode),
                 PriceToString.priceToString(getAvgOutPrice()),
                 getProfit(),
                 getProfitPercent(),

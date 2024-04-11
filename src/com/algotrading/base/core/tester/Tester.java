@@ -128,7 +128,7 @@ public class Tester {
      * Добавить заявку в ряд заявок.
      *
      * @param orders     ряд заявок
-     * @param timeCode   метка времени
+     * @param t          метка времени
      * @param security   код инструмента
      * @param volume     объём заявки
      * @param price      цена
@@ -136,13 +136,13 @@ public class Tester {
      * @param comment    комментарий
      */
     public static void appendOrder(final Series orders,
-                                   final long timeCode,
+                                   final long t,
                                    final String security,
                                    final long volume,
                                    final double price,
                                    final double commission,
                                    final String comment) {
-        orders.getLongColumn(FinSeries.T).append(timeCode);
+        orders.getLongColumn(FinSeries.T).append(t);
         orders.getStringColumn("Security").append(security);
         orders.getLongColumn(FinSeries.V).append(volume);
         orders.getDoubleColumn("Price").append(price);
@@ -154,7 +154,7 @@ public class Tester {
      * Добавить заявку в ряд заявок.
      *
      * @param orders     ряд заявок
-     * @param timeCode   метка времени
+     * @param t          метка времени
      * @param security   код инструмента
      * @param volume     объём заявки
      * @param price      цена
@@ -162,13 +162,13 @@ public class Tester {
      * @param comment    комментарий
      */
     public static void appendOrder(final Series orders,
-                                   final long timeCode,
+                                   final long t,
                                    final String security,
                                    final long volume,
                                    final double price,
                                    final Commission commission,
                                    final String comment) {
-        appendOrder(orders, timeCode, security, volume, price, commission.getCommission(volume, security, price), comment);
+        appendOrder(orders, t, security, volume, price, commission.getCommission(volume, security, price), comment);
     }
 
     public static void writeEquity(final Series equity, final String fileName) throws IOException {
@@ -178,13 +178,13 @@ public class Tester {
                     .header("Date;Time;Equity,%")
                     .separator(";")
                     .column(equity.getLongColumn("T"), t -> String.format("%02d.%02d.%04d",
-                                                                          TimeCodes.day(t),
-                                                                          TimeCodes.month(t),
-                                                                          TimeCodes.year(t)))
+                            TimeCodes.day(t),
+                            TimeCodes.month(t),
+                            TimeCodes.year(t)))
                     .column(equity.getLongColumn("T"), t -> String.format("%02d:%02d:%02d",
-                                                                          TimeCodes.hour(t),
-                                                                          TimeCodes.min(t),
-                                                                          TimeCodes.sec(t)))
+                            TimeCodes.hour(t),
+                            TimeCodes.min(t),
+                            TimeCodes.sec(t)))
                     .column(equity.getDoubleColumn(EQUITY), "%.4f")
                     .write(ps, 0, equity.length());
         }
@@ -197,13 +197,13 @@ public class Tester {
                     .header("Date;Time;Equity,%;CapitalUsed,%")
                     .separator(";")
                     .column(equity.getLongColumn("T"), t -> String.format("%02d.%02d.%04d",
-                                                                          TimeCodes.day(t),
-                                                                          TimeCodes.month(t),
-                                                                          TimeCodes.year(t)))
+                            TimeCodes.day(t),
+                            TimeCodes.month(t),
+                            TimeCodes.year(t)))
                     .column(equity.getLongColumn("T"), t -> String.format("%02d:%02d:%02d",
-                                                                          TimeCodes.hour(t),
-                                                                          TimeCodes.min(t),
-                                                                          TimeCodes.sec(t)))
+                            TimeCodes.hour(t),
+                            TimeCodes.min(t),
+                            TimeCodes.sec(t)))
                     .column(equity.getDoubleColumn(EQUITY), "%.4f")
                     .column(equity.getDoubleColumn(CAPITAL_USED), "%.4f")
                     .write(ps, 0, equity.length());
@@ -386,7 +386,7 @@ public class Tester {
         final DoubleColumn cHourly = equityHourly.getDoubleColumn(CAPITAL_USED);
         for (int index = 0; index < len - 1; index++) {
             if (TimeCodes.hour(t.get(index)) != TimeCodes.hour(t.get(index + 1))
-                || TimeCodes.yyyymmdd(t.get(index)) != TimeCodes.yyyymmdd(t.get(index + 1))) {
+                    || TimeCodes.yyyymmdd(t.get(index)) != TimeCodes.yyyymmdd(t.get(index + 1))) {
                 tHourly.append(t.get(index));
                 eHourly.append(e.get(index));
                 cHourly.append(c.get(index));
@@ -505,11 +505,11 @@ public class Tester {
         final int len = orders.length();
         while (ordersIndex < len && orders.timeCode().get(ordersIndex) <= synchronizer.t()) {
             processOrder(ordersTimeCode.get(ordersIndex),
-                         ordersSecurity.get(ordersIndex),
-                         ordersVolume.get(ordersIndex),
-                         ordersPrice.get(ordersIndex),
-                         ordersCommission.get(ordersIndex),
-                         ordersComment.get(ordersIndex));
+                    ordersSecurity.get(ordersIndex),
+                    ordersVolume.get(ordersIndex),
+                    ordersPrice.get(ordersIndex),
+                    ordersCommission.get(ordersIndex),
+                    ordersComment.get(ordersIndex));
             ordersIndex++;
         }
     }
@@ -533,7 +533,7 @@ public class Tester {
         if (tradeId == -1) {
             final FinSeries s = securitiesMap.get(security);
             activeTrades.add(new TestTrade(timeCode, security, volume, price, commission,
-                                                 s.timeCode(), s.close()));
+                    s.timeCode(), s.close()));
         } else {
             final TestTrade trade = activeTrades.get(tradeId);
             final double oldVolume = trade.getVolume();
@@ -559,7 +559,7 @@ public class Tester {
                 doneTrades.add(trade);
                 doneTradesProfit += trade.getEquity(price);
                 activeTrades.add(new TestTrade(timeCode, security, newVolume, price, commission2,
-                                                     trade.timeCodeColumn, trade.closeColumn));
+                        trade.timeCodeColumn, trade.closeColumn));
             }
         }
     }
@@ -567,18 +567,18 @@ public class Tester {
     private void processSeries() {
         double sumEquity = doneTradesProfit;
         double sumCapitalUsed = 0;
-        final long timeCode = synchronizer.t();
+        final long t = synchronizer.t();
         for (final TestTrade trade : activeTrades) {
             final int updatedIndex = synchronizer.getUpdatedIndex(trade.timeCodeColumn);
             if (updatedIndex >= 0) {
                 trade.barsInTrade++;
                 trade.last = trade.closeColumn.get(updatedIndex);
-                trade.lastTimeCode = timeCode;
+                trade.tLast = t;
             }
             sumEquity += trade.getEquity(trade.last);
             sumCapitalUsed += Math.abs(trade.getUsedCapital());
         }
-        equityTimeCode.append(timeCode);
+        equityTimeCode.append(t);
         equity.append(sumEquity);
         capitalUsed.append(sumCapitalUsed);
         if (sumEquity > maxEquity) {
@@ -779,12 +779,12 @@ public class Tester {
      */
     public String getStatsValues() {
         return String.format(Locale.US, "%s; %.2f; %.2f; %.2f; %.2f; %d",
-                             initialCapital,
-                             getNetProfitPercent(),
-                             getMaxSysDrawDownPercent(),
-                             getProfitFactor(),
-                             getAvgProfitPercent(),
-                             getTradesCount());
+                initialCapital,
+                getNetProfitPercent(),
+                getMaxSysDrawDownPercent(),
+                getProfitFactor(),
+                getAvgProfitPercent(),
+                getTradesCount());
     }
 
     public enum DrawdownMode {

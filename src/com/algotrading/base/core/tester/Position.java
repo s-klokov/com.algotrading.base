@@ -111,26 +111,26 @@ public class Position {
     /**
      * Добавить заявку в список сработавших.
      *
-     * @param timeCode   метка времени
+     * @param t          метка времени
      * @param volume     объём
      * @param price      цена
      * @param commission комиссия
      * @param comment    комментарий
      */
-    public void appendOrder(final long timeCode, final long volume, final double price, final Commission commission, final String comment) {
+    public void appendOrder(final long t, final long volume, final double price, final Commission commission, final String comment) {
         final double c = commission.getCommission(volume, secCode, price);
-        Tester.appendOrder(orders, timeCode, secCode, volume, price, c, comment);
+        Tester.appendOrder(orders, t, secCode, volume, price, c, comment);
         cash -= price * volume;
         cash -= c;
         position += volume;
-        updateEquity(timeCode, price);
+        updateEquity(t, price);
     }
 
-    private void updateEquity(final long timeCode, final double price) {
+    private void updateEquity(final long t, final double price) {
         if (equity != null) {
             final LongColumn equityTimeCode = equity.timeCode();
-            if (equityTimeCode.length() == 0 || equityTimeCode.getLast() != timeCode) {
-                equityTimeCode.append(timeCode);
+            if (equityTimeCode.length() == 0 || equityTimeCode.getLast() != t) {
+                equityTimeCode.append(t);
                 equity.getDoubleColumn(Tester.EQUITY).append(cash + position * price);
             } else {
                 final DoubleColumn equityColumn = equity.getDoubleColumn(Tester.EQUITY);
@@ -256,8 +256,8 @@ public class Position {
             throw new IllegalArgumentException("stopPrice=" + stopPrice);
         }
         final TestTakeStopOrder takeStopOrder = new TestTakeStopOrder(volume,
-                                                                      takePrice, takeCommission, takeComment,
-                                                                      stopPrice, stopCommission, stopComment);
+                takePrice, takeCommission, takeComment,
+                stopPrice, stopCommission, stopComment);
         activeOrders.add(takeStopOrder);
         return takeStopOrder;
     }
@@ -265,7 +265,7 @@ public class Position {
     /**
      * Появилась новая свеча.
      *
-     * @param timeCode  метка времени
+     * @param t         метка времени
      * @param open      цена открытия
      * @param high      максимальная цена
      * @param low       минимальная цена
@@ -274,7 +274,7 @@ public class Position {
      * @param priceStep шаг цены
      * @return список сработавших заявок (возможно, пустой)
      */
-    public List<TestOrder> onCandle(final long timeCode,
+    public List<TestOrder> onCandle(final long t,
                                     final double open,
                                     final double high,
                                     final double low,
@@ -286,43 +286,43 @@ public class Position {
             currentPrice = open;
         }
         final List<TestOrder> ordersExecuted = new ArrayList<>();
-        movePrice(timeCode, open, true, ordersExecuted);
+        movePrice(t, open, true, ordersExecuted);
         if (open <= close) {
-            movePrice(timeCode, low, false, ordersExecuted);
-            movePrice(timeCode, high, false, ordersExecuted);
+            movePrice(t, low, false, ordersExecuted);
+            movePrice(t, high, false, ordersExecuted);
         } else {
-            movePrice(timeCode, high, false, ordersExecuted);
-            movePrice(timeCode, low, false, ordersExecuted);
+            movePrice(t, high, false, ordersExecuted);
+            movePrice(t, low, false, ordersExecuted);
         }
-        // в методе movePrice(timeCode, close, false, ordersExecuted) не будет новых срабатываний,
+        // в методе movePrice(t, close, false, ordersExecuted) не будет новых срабатываний,
         // поэтому можно просто присвоить переменной currentPrice значение close
         currentPrice = close;
-        updateEquity(timeCode, close);
+        updateEquity(t, close);
         return ordersExecuted;
     }
 
     /**
      * Смоделировать изменение цены от текущей цены к новой цене.
      *
-     * @param timeCode       временная метка
+     * @param t              временная метка
      * @param price          новая цена
      * @param hasGap         {@code true}, если был гэп
      * @param ordersExecuted список, куда будут добавляться сработавшие заявки
      */
-    private void movePrice(final long timeCode, final double price, final boolean hasGap, final List<TestOrder> ordersExecuted) {
+    private void movePrice(final long t, final double price, final boolean hasGap, final List<TestOrder> ordersExecuted) {
         for (final Iterator<TestOrder> i = activeOrders.iterator(); i.hasNext(); ) {
             final TestOrder activeOrder = i.next();
             if (activeOrder instanceof final TestLimitOrder o) {
                 if (crossed(o.price, currentPrice, price)) {
                     o.executionPrice = o.price;
-                    appendOrder(timeCode, o.volume, o.executionPrice, o.commission, o.comment);
+                    appendOrder(t, o.volume, o.executionPrice, o.commission, o.comment);
                     i.remove();
                     ordersExecuted.add(o);
                 }
             } else if (activeOrder instanceof final TestStopOrder o) {
                 if (o.volume > 0 && price >= o.price || o.volume < 0 && price <= o.price) {
                     o.executionPrice = hasGap ? price : o.price;
-                    appendOrder(timeCode, o.volume, o.executionPrice, o.commission, o.comment);
+                    appendOrder(t, o.volume, o.executionPrice, o.commission, o.comment);
                     i.remove();
                     ordersExecuted.add(o);
                 }
@@ -330,13 +330,13 @@ public class Position {
                 if (o.volume > 0 && price >= o.stopPrice || o.volume < 0 && price <= o.stopPrice) {
                     o.executionPrice = hasGap ? price : o.stopPrice;
                     o.type = TestTakeStopOrder.Type.StopLoss;
-                    appendOrder(timeCode, o.volume, o.executionPrice, o.stopCommission, o.stopComment);
+                    appendOrder(t, o.volume, o.executionPrice, o.stopCommission, o.stopComment);
                     i.remove();
                     ordersExecuted.add(o);
                 } else if (crossed(o.takePrice, currentPrice, price)) {
                     o.executionPrice = o.takePrice;
                     o.type = TestTakeStopOrder.Type.TakeProfit;
-                    appendOrder(timeCode, o.volume, o.executionPrice, o.takeCommission, o.takeComment);
+                    appendOrder(t, o.volume, o.executionPrice, o.takeCommission, o.takeComment);
                     i.remove();
                     ordersExecuted.add(o);
                 }
