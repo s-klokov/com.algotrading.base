@@ -22,11 +22,11 @@ public class TestTrade {
     /**
      * Время входа в трейд.
      */
-    public final long enterTimeCode;
+    public final long tEnter;
     /**
      * Время выхода из трейда (0L - трейд ещё активен).
      */
-    public long exitTimeCode = 0L;
+    public long tExit = 0L;
     /**
      * Объём со знаком, затраченный на увеличение позиции в трейде.
      */
@@ -82,7 +82,7 @@ public class TestTrade {
         if (Math.abs(size) <= EPS) {
             throw new IllegalArgumentException("Zero size");
         }
-        enterTimeCode = t;
+        tEnter = t;
         scaleInVolume = size;
         scaleInValue = size * price;
         scaleOutVolume = 0;
@@ -119,7 +119,7 @@ public class TestTrade {
         double newVolume = volume + delta;
         if (Math.abs(newVolume) <= EPS) {
             newVolume = 0;
-            exitTimeCode = t;
+            tExit = t;
         }
         if (volume * newVolume < 0) {
             throw new IllegalArgumentException("Current volume = " + volume + ", delta = " + delta);
@@ -217,9 +217,9 @@ public class TestTrade {
                 security,
                 isDone() ? "" : "Open ",
                 isLong() ? "Long" : isShort() ? "Short" : "???",
-                TimeCodes.timeCodeString(enterTimeCode),
+                TimeCodes.asString(tEnter),
                 PriceToString.priceToString(getAvgInPrice(), Locale.US),
-                TimeCodes.timeCodeString(exitTimeCode == 0L ? tLast : exitTimeCode),
+                TimeCodes.asString(tExit == 0L ? tLast : tExit),
                 PriceToString.priceToString(getAvgOutPrice(), Locale.US),
                 getProfit(),
                 getProfitPercent(),
@@ -235,9 +235,9 @@ public class TestTrade {
                 security,
                 isDone() ? "" : "Open ",
                 isLong() ? "Long" : isShort() ? "Short" : "???",
-                TimeCodes.timeCodeString(enterTimeCode),
+                TimeCodes.asString(tEnter),
                 PriceToString.priceToString(getAvgInPrice()),
-                TimeCodes.timeCodeString(exitTimeCode == 0L ? tLast : exitTimeCode),
+                TimeCodes.asString(tExit == 0L ? tLast : tExit),
                 PriceToString.priceToString(getAvgOutPrice()),
                 getProfit(),
                 getProfitPercent(),

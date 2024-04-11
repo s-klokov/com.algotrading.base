@@ -114,7 +114,7 @@ public class FinamSeriesReader extends SeriesReader {
                 .column(series.close())
                 .column(series.volume())
                 .computation(series.timeCode(), () -> {
-                    final long t = TimeCodes.timeCode(Integer.parseInt(yyyymmdd.get()), Integer.parseInt(hhmmss.get()), 0);
+                    final long t = TimeCodes.t(Integer.parseInt(yyyymmdd.get()), Integer.parseInt(hhmmss.get()), 0);
                     tValue.set(t);
                     return t;
                 })
@@ -163,7 +163,7 @@ public class FinamSeriesReader extends SeriesReader {
         }
         csvReader
                 .computation(series.timeCode(), () -> {
-                    final long t = TimeCodes.timeCode(yyyymmdd, hhmmssms);
+                    final long t = TimeCodes.t(yyyymmdd, hhmmssms);
                     tValue.set(t);
                     return t;
                 })

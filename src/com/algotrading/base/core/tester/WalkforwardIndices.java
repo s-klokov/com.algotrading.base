@@ -56,7 +56,7 @@ public class WalkforwardIndices {
      */
     public static int getIndex(final LongColumn timeCode, final LocalDate date, final int hhmmss) {
         final int yyyymmdd = date.getYear() * 10000 + date.getMonthValue() * 100 + date.getDayOfMonth();
-        long t = TimeCodes.timeCode(yyyymmdd, hhmmss);
+        long t = TimeCodes.t(yyyymmdd, hhmmss);
         int id = timeCode.binarySearch(t);
         if (id >= 0) {
             return id;

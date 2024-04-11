@@ -80,9 +80,9 @@ public class Walkforward {
 
         for (final WalkforwardIndices wfi : walkforwardIndices) {
             descriptions.add("Optimization period: "
-                             + TimeCodes.timeCodeStringHHMMSS(timeCode.get(wfi.optFrom))
+                             + TimeCodes.asStringHHMMSS(timeCode.get(wfi.optFrom))
                              + " -- "
-                             + TimeCodes.timeCodeStringHHMMSS(timeCode.get(wfi.optTo - 1)));
+                             + TimeCodes.asStringHHMMSS(timeCode.get(wfi.optTo - 1)));
             final Map<String, Double> selected = equitySelector.selectEquities(allEquities, wfi.optFrom, wfi.optTo);
             descriptions.add("Equities selected: " + selected.size());
             double totalWeight = 0;
@@ -91,9 +91,9 @@ public class Walkforward {
                 totalWeight += e.getValue();
             }
             descriptions.add("Trading period: "
-                             + TimeCodes.timeCodeStringHHMMSS(timeCode.get(wfi.tradeFrom))
+                             + TimeCodes.asStringHHMMSS(timeCode.get(wfi.tradeFrom))
                              + " -- "
-                             + TimeCodes.timeCodeStringHHMMSS(timeCode.get(wfi.tradeTo - 1)));
+                             + TimeCodes.asStringHHMMSS(timeCode.get(wfi.tradeTo - 1)));
             if (totalWeight == 0) {
                 for (int i = wfi.tradeFrom; i < wfi.tradeTo; i++) {
                     totalTimeCode.append(timeCode.get(i));

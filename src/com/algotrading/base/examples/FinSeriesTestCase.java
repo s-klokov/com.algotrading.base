@@ -37,7 +37,7 @@ class FinSeriesTestCase {
                     .column(series.low())
                     .column(series.close())
                     .column(series.volume())
-                    .computation(series.timeCode(), () -> TimeCodes.timeCode(yyyymmdd, hhmmss))
+                    .computation(series.timeCode(), () -> TimeCodes.t(yyyymmdd, hhmmss))
                     .computation(series.getStringColumn("Comment"), () -> "No comment")
                     .computation(series.getColumn("Info"), () -> "Some info")
                     .read();
@@ -83,7 +83,7 @@ class FinSeriesTestCase {
                     .column(ticks.last())
                     .column(ticks.volume())
 //                    .column(ticks.getIntColumn("BuySell"))
-                    .computation(ticks.timeCode(), () -> TimeCodes.timeCode(date, time))
+                    .computation(ticks.timeCode(), () -> TimeCodes.t(date, time))
                     .read();
         } catch (final IOException e) {
             e.printStackTrace();

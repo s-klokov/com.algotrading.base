@@ -31,7 +31,7 @@ class RandomCandlesGenerator {
         for (LocalDateTime dt = LocalDateTime.of(2011, 1, 1, 10, 0);
                 dt.isBefore(LocalDateTime.of(2017, 7, 13, 18, 40));
                 dt = dt.plusMinutes(1)) {
-            final long t = TimeCodes.timeCode(dt);
+            final long t = TimeCodes.t(dt);
             final int hhmm = TimeCodes.hhmm(t);
             if (1000 <= hhmm && hhmm < 1840) {
                 final double o = k * Math.exp(logPrice);

@@ -161,7 +161,7 @@ public class FinSeries extends Series {
         return compressedCandles(
                 NO_TIME_SHIFT,
                 timeFilter,
-                timeCode -> TimeCodes.timeCode(TimeCodes.yyyymmdd(timeCode), 0),
+                timeCode -> TimeCodes.t(TimeCodes.yyyymmdd(timeCode), 0),
                 0);
     }
 

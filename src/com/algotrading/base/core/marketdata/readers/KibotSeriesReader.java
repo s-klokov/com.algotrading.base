@@ -87,7 +87,7 @@ public class KibotSeriesReader extends SeriesReader {
                 .column(series.close())
                 .column(series.volume())
                 .computation(series.timeCode(), () -> {
-                    final long t = TimeCodes.timeCode(mmddyyyy.get() + ';' + hhmm.get(), dtf);
+                    final long t = TimeCodes.t(mmddyyyy.get() + ';' + hhmm.get(), dtf);
                     tValue.set(t);
                     return t;
                 })
@@ -124,7 +124,7 @@ public class KibotSeriesReader extends SeriesReader {
                 .column(series.close())
                 .column(series.volume())
                 .computation(series.timeCode(), () -> {
-                    final long t = TimeCodes.timeCode(mmddyyyy.get() + ";00:00", dtf);
+                    final long t = TimeCodes.t(mmddyyyy.get() + ";00:00", dtf);
                     tValue.set(t);
                     return t;
                 })
