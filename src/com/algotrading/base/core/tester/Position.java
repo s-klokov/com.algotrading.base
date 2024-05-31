@@ -320,14 +320,16 @@ public class Position {
                     ordersExecuted.add(o);
                 }
             } else if (activeOrder instanceof final TestStopOrder o) {
-                if (o.volume > 0 && price >= o.price || o.volume < 0 && price <= o.price) {
+                if (o.volume > 0 && price >= o.price - priceStep / 2
+                        || o.volume < 0 && price <= o.price + priceStep / 2) {
                     o.executionPrice = hasGap ? price : o.price;
                     appendOrder(t, o.volume, o.executionPrice, o.commission, o.comment);
                     i.remove();
                     ordersExecuted.add(o);
                 }
             } else if (activeOrder instanceof final TestTakeStopOrder o) {
-                if (o.volume > 0 && price >= o.stopPrice || o.volume < 0 && price <= o.stopPrice) {
+                if (o.volume > 0 && price >= o.stopPrice - priceStep / 2
+                        || o.volume < 0 && price <= o.stopPrice + priceStep / 2) {
                     o.executionPrice = hasGap ? price : o.stopPrice;
                     o.type = TestTakeStopOrder.Type.StopLoss;
                     appendOrder(t, o.volume, o.executionPrice, o.stopCommission, o.stopComment);
