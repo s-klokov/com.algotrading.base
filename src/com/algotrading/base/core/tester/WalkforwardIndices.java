@@ -126,7 +126,7 @@ public class WalkforwardIndices {
         for (int i = optimizationFutures; i < futures.length; i++) {
             final Futures f = futures[i];
             final int futFrom = Math.max(from, f.previousExpiry);
-            final int futTill = Math.min(till, f.oneDayBeforeExpiry);
+            final int futTill = Math.min(till, f.rolling);
             if (futFrom < futTill) {
                 final int tradeFrom = getFirstDayIndex(timeCode, futFrom);
                 final int tradeTo = getLastDayIndex(timeCode, futTill) + 1;

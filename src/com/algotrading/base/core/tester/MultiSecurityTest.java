@@ -419,8 +419,8 @@ public abstract class MultiSecurityTest {
             } else { // фьючерс
                 final Futures f = futuresExchange.byShortCode(secCode);
                 if (!map.containsKey(f.prefix)) {
-                    if (hhmm < hhmmSwitch && yyyymmdd <= f.oneDayBeforeExpiry
-                            || hhmm >= hhmmSwitch && yyyymmdd < f.oneDayBeforeExpiry) {
+                    if (hhmm < hhmmSwitch && yyyymmdd <= f.rolling
+                            || hhmm >= hhmmSwitch && yyyymmdd < f.rolling) {
                         map.put(f.prefix, secCode);
                     }
                 }
@@ -451,7 +451,7 @@ public abstract class MultiSecurityTest {
                 final LocalDate date = LocalDate.of(yyyy, mm, dd).minusDays(futuresOverlapDays);
                 futFrom = Math.max(from, date.getYear() * 10000 + date.getMonthValue() * 100 + date.getDayOfMonth());
             }
-            final int futTill = Math.min(till, f.oneDayBeforeExpiry);
+            final int futTill = Math.min(till, f.rolling);
             if (futFrom < futTill) {
                 ps.print("Loading " + f.shortCode + " " + futFrom + "-" + futTill + "...");
                 final FinSeries series = candleDataProvider

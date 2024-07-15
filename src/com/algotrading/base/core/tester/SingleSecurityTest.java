@@ -356,7 +356,7 @@ public abstract class SingleSecurityTest {
                 final LocalDate date = LocalDate.of(yyyy, mm, dd).minusDays(futuresOverlapDays);
                 futFrom = Math.max(from, yyyymmdd(date));
             }
-            final int futTill = Math.min(till, f.oneDayBeforeExpiry);
+            final int futTill = Math.min(till, f.rolling);
             if (futFrom < futTill) {
                 ps.print("Loading " + f.shortCode + " " + futFrom + "-" + futTill + "...");
                 candleDataProvider.from(futFrom).till(futTill).timeFilter(timeFilter);

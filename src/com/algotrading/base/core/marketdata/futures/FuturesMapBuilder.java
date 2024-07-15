@@ -13,8 +13,8 @@ public final class FuturesMapBuilder {
     }
 
     public FuturesMapBuilder put(final String longCode, final String shortCode,
-                                 final int expiry, final int oneDayBeforeExpiry, final int previousExpiry) {
-        map.put(shortCode, new Futures(prefix, longCode, shortCode, expiry, oneDayBeforeExpiry, previousExpiry));
+                                 final int expiry, final int rolling, final int previousExpiry) {
+        map.put(shortCode, new Futures(prefix, longCode, shortCode, expiry, rolling, previousExpiry));
         return this;
     }
 

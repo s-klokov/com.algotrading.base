@@ -8,7 +8,7 @@ public class Futures {
     public final String longCode;
     public final String shortCode;
     public final int expiry;
-    public final int oneDayBeforeExpiry;
+    public final int rolling;
     public final int previousExpiry;
     public final LocalDate expiryDate;
     public final LocalDate oneDayBeforeExpiryDate;
@@ -18,16 +18,16 @@ public class Futures {
                       final String longCode,
                       final String shortCode,
                       final int expiry,
-                      final int oneDayBeforeExpiry,
+                      final int rolling,
                       final int previousExpiry) {
         this.prefix = prefix;
         this.longCode = longCode;
         this.shortCode = shortCode;
         this.expiry = expiry;
-        this.oneDayBeforeExpiry = oneDayBeforeExpiry;
+        this.rolling = rolling;
         this.previousExpiry = previousExpiry;
         expiryDate = localDate(expiry);
-        oneDayBeforeExpiryDate = localDate(oneDayBeforeExpiry);
+        oneDayBeforeExpiryDate = localDate(rolling);
         previousExpiryDate = localDate(previousExpiry);
     }
 
