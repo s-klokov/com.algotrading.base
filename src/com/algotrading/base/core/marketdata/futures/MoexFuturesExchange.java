@@ -422,6 +422,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("BR-9.24", "BRU4", 20240902, 20240830, 20240801)
                 .put("BR-10.24", "BRV4", 20241001, 20240930, 20240902)
                 .put("BR-11.24", "BRX4", 20241101, 20241031, 20241001)
+                .put("BR-12.24", "BRZ4", 20241202, 20241129, 20241101)
                 .build()
         );
 
@@ -487,6 +488,8 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("NG-8.24", "NGQ4", 20240828, 20240827, 20240729)
                 .put("NG-9.24", "NGU4", 20240926, 20240925, 20240828)
                 .put("NG-10.24", "NGV4", 20241029, 20241028, 20240926)
+                .put("NG-11.24", "NGX4", 20241126, 20241125, 20241029)
+                .put("NG-12.24", "NGZ4", 20241227, 20241226, 20241126)
                 .build()
         );
 
