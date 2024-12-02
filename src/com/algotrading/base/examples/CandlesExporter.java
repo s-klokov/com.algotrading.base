@@ -24,7 +24,8 @@ class CandlesExporter {
         new CandlesExporter()
 //                .export("SBER", 5, TimeUnit.MINUTES, 20160101, 20170503);
 //                .export("GAZP", 5, TimeUnit.MINUTES, 20160101, 20170503);
-                .export("LKOH", 5, TimeUnit.MINUTES, 20160101, 20170503);
+//                .export("LKOH", 5, TimeUnit.MINUTES, 20160101, 20170503);
+                .export("IMOEX", 1, TimeUnit.DAYS, 20170101, 20241201);
     }
 
     private void export(final String secCode,
@@ -40,8 +41,8 @@ class CandlesExporter {
         System.out.println("Loading " + secCode + " " + from + "-" + till + "...");
         try (final PrintStream ps = new PrintStream(secCode + "_" + from + "_" + till + "_" + timeframe + ".csv", StandardCharsets.UTF_8)) {
             FinSeries series = provider.from(from).till(till).timeFilter(TimeFilters.FILTER_1000_1840).getSeries(secCode);
-            if (timeframe != 1) {
-                series = series.compressedCandles(timeframe, TimeUnit.MINUTES);
+            if (timeframe != 1 || unit != TimeUnit.MINUTES) {
+                series = series.compressedCandles(timeframe, unit);
             }
             final String prefix = secCode + ";" + timeframe;
             new CsvWriter()
@@ -56,7 +57,7 @@ class CandlesExporter {
                     .column(series.volume())
                     .write(ps, 0, series.length());
         } catch (final IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 }
