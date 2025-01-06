@@ -9,6 +9,7 @@ import com.algotrading.base.core.window.WindowOfDouble;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.ToDoubleFunction;
 
 /**
  * Вычисление индикатора, отражающего одновременность обновления минимумов/максимумов корзиной инструментов.
@@ -20,18 +21,25 @@ public class BasketExtrema {
     }
 
     /**
+     *Равномерная весова функция.
+     */
+    public static final ToDoubleFunction<String> UNIFORM_WEIGHT_FUNCTION = s -> 1.0;
+
+    /**
      * Сформировать временной ряд из двух колонок с именами {@link FinSeries#T} и {@code columnName}.
-     * Значение индикатора равно количеству инструментов, обновивших максимумы за окно длины {@code longPeriod}
-     * в течение последних {@code shortPeriod} моментов времени, минус количество инструментов, обновивших минимумы
-     * за то же окно, делённое на общее количество инструментов.
+     * Значение индикатора равно суммарному весу инструментов, обновивших максимумы за окно длины {@code longPeriod}
+     * в течение последних {@code shortPeriod} моментов времени, за вычетом суммарного веса инструментов,
+     * обновивших минимумы то же окно, делённому на общий вес инструментов.
      *
      * @param marketDataMap соответствие код инструмента -> свечной временной ряд инструмента
+     * @param weightFunction весовая функция, задающая для каждого инструмента его вес для использования в индикаторе
      * @param longPeriod    длина окна для расчёта максимумов/минимумов
      * @param shortPeriod   длина окна для отслеживания одновременности обновления экстремумов
      * @param columnName    название колонки индикатора
      * @return временной ряд с колонками с именами {@link FinSeries#T} и {@code columnName}
      */
     public static FinSeries basketExtrema(final Map<String, FinSeries> marketDataMap,
+                                          final ToDoubleFunction<String> weightFunction,
                                           final int longPeriod,
                                           final int shortPeriod,
                                           final String columnName) {
@@ -42,10 +50,12 @@ public class BasketExtrema {
         final Synchronizer synchronizer = new Synchronizer();
         final Map<String, WindowOfDouble> mapOfHighs = new HashMap<>();
         final Map<String, WindowOfDouble> mapOfLows = new HashMap<>();
+        final DoubleValue totalWeightValue = new DoubleValue(0);
         marketDataMap.forEach((secCode, series) -> {
             synchronizer.put(series.timeCode());
             mapOfHighs.put(secCode, new WindowOfDouble(longPeriod + shortPeriod));
             mapOfLows.put(secCode, new WindowOfDouble(longPeriod + shortPeriod));
+            totalWeightValue.set(totalWeightValue.get() + weightFunction.applyAsDouble(secCode));
         });
 
         int counter = 0;
@@ -77,7 +87,7 @@ public class BasketExtrema {
                     if (Double.isFinite(max)) {
                         for (int i = -shortPeriod + 1; i <= 0; i++) {
                             if (windowOfHighs.get(i) > max) {
-                                doubleValue.set(doubleValue.get() + 1.0);
+                                doubleValue.set(doubleValue.get() + weightFunction.applyAsDouble(secCode));
                                 break;
                             }
                         }
@@ -85,7 +95,7 @@ public class BasketExtrema {
                     if (Double.isFinite(min)) {
                         for (int i = -shortPeriod + 1; i <= 0; i++) {
                             if (windowOfLows.get(i) < min) {
-                                doubleValue.set(doubleValue.get() - 1.0);
+                                doubleValue.set(doubleValue.get() - weightFunction.applyAsDouble(secCode));
                                 break;
                             }
                         }
@@ -94,7 +104,7 @@ public class BasketExtrema {
             }
 
             timeCode.append(t);
-            column.append(doubleValue.get() / marketDataMap.size());
+            column.append(doubleValue.get() / totalWeightValue.get());
         }
 
         return indicatorSeries;
