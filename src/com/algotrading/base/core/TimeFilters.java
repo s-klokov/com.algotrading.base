@@ -1,5 +1,6 @@
 package com.algotrading.base.core;
 
+import java.time.LocalDate;
 import java.util.function.LongPredicate;
 
 /**
@@ -30,6 +31,18 @@ public class TimeFilters {
                 return hhmm >= hhmmFrom || hhmm < hhmmTill;
             };
         }
+    }
+
+    /**
+     * Получить фильтр по времени, где выбираются только дни с понедельника по пятницу.
+     *
+     * @return фильтр
+     */
+    public static LongPredicate weekDays() {
+        return t -> switch (LocalDate.of(TimeCodes.year(t), TimeCodes.month(t), TimeCodes.day(t)).getDayOfWeek()) {
+            case MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY -> true;
+            case SATURDAY, SUNDAY -> false;
+        };
     }
 
     /**
