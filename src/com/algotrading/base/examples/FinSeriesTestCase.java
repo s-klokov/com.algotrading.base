@@ -42,7 +42,7 @@ class FinSeriesTestCase {
                     .computation(series.getColumn("Info"), () -> "Some info")
                     .read();
         } catch (final IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
         System.out.println(series.hasEqualColumnLength());
 
@@ -60,7 +60,7 @@ class FinSeriesTestCase {
                     .column(series.volume())
                     .write(ps, 0, series.length());
         } catch (final IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
 
         System.out.println(series);
@@ -86,11 +86,11 @@ class FinSeriesTestCase {
                     .computation(ticks.timeCode(), () -> TimeCodes.t(date, time))
                     .read();
         } catch (final IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
         System.out.println(ticks);
 
-        final FinSeries candles = ticks.compressedCandles(timeCode -> TimeCodes.hhmm(timeCode) < 1845, 15, TimeUnit.MINUTES);
+        final FinSeries candles = ticks.compressedCandles(t -> TimeCodes.hhmm(t) < 1845, 15, TimeUnit.MINUTES);
 //        final FinSeries candles = ticks.compressedDailyCandles(null);
         System.out.println(candles);
 
@@ -109,7 +109,7 @@ class FinSeriesTestCase {
                     .column(candles.volume())
                     .write(ps, 0, candles.length());
         } catch (final IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 }

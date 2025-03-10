@@ -146,7 +146,7 @@ public class FinSeries extends Series {
     }
 
     public FinSeries compressedCandles(final int period, final TimeUnit unit) {
-        return compressedCandles(timeCode -> true, period, unit);
+        return compressedCandles(t -> true, period, unit);
     }
 
     public FinSeries compressedCandles(final LongPredicate timeFilter, final int period, final TimeUnit unit) {
