@@ -2171,6 +2171,5 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("NASD-9.25", "NAU5", 20250919, 20250918, 20250620)
                 .build()
         );
-
     }
 }
