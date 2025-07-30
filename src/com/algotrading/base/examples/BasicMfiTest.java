@@ -1,5 +1,6 @@
 package com.algotrading.base.examples;
 
+import com.algotrading.base.core.TimeFilters;
 import com.algotrading.base.core.columns.DoubleColumn;
 import com.algotrading.base.core.columns.LongColumn;
 import com.algotrading.base.core.commission.SimpleCommission;
@@ -17,8 +18,6 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import static com.algotrading.base.core.TimeFilters.FILTER_1000_1845;
 
 /**
  * Пример тестирования торговли по индикатору MFI.
@@ -65,12 +64,12 @@ class BasicMfiTest extends SingleSecurityTest {
                     .withMarketCommission(SimpleCommission.ofPercent(0.01))
                     .from(2016_01_01)
                     .till(2021_12_31)
-                    .timeFilter(FILTER_1000_1845)
+                    .timeFilter(TimeFilters.between(1000, 1850))
                     .loadMarketData()
-                    .optimize();
-//                    .runTest(TestOption.Summary, TestOption.EquityAndCapitalDaily);
+//                    .optimize();
+                    .runTest(TestOption.Summary, TestOption.EquityAndCapitalDaily);
         } catch (final IOException | RuntimeException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 

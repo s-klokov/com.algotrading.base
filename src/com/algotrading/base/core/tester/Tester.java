@@ -30,6 +30,10 @@ public class Tester {
      */
     public static final String EQUITY = "Equity";
     /**
+     * Название колонки для фандинга.
+     */
+    public static final String FUNDING = "Funding";
+    /**
      * Название колонки использованного капитала.
      */
     public static final String CAPITAL_USED = "CapitalUsed";
@@ -60,14 +64,16 @@ public class Tester {
      */
     private final List<TestTrade> activeTrades = new ArrayList<>();
     /**
-     * Equity, используемый объём капитала.
+     * Equity, фандинг и используемый объём капитала.
      */
     private final FinSeries equityAndCapitalUsed = new FinSeries()
             .withLongColumn(FinSeries.T)
             .withDoubleColumn(EQUITY)
+            .withDoubleColumn(FUNDING)
             .withDoubleColumn(CAPITAL_USED);
     private final LongColumn equityTimeCode = equityAndCapitalUsed.timeCode();
     private final DoubleColumn equity = equityAndCapitalUsed.getDoubleColumn(EQUITY);
+    private final DoubleColumn funding = equityAndCapitalUsed.getDoubleColumn(FUNDING);
     private final DoubleColumn capitalUsed = equityAndCapitalUsed.getDoubleColumn(CAPITAL_USED);
     /**
      * Режим определения просадки.
@@ -81,6 +87,11 @@ public class Tester {
      * Значение profit для завершённых трейдов.
      */
     private double doneTradesProfit = 0;
+    /**
+     * Значение фандинга для завершённых трейдов.
+     */
+    private double doneTradesFunding = 0;
+
     /**
      * Индекс очередного элемента заявок.
      */
@@ -101,12 +112,16 @@ public class Tester {
      * Суммарная комиссия.
      */
     private double totalCommission = 0;
+    /**
+     * Суммарный фандинг.
+     */
+    private double totalFunding = 0;
 
     /**
      * @return заголовок для строк с базовой статистикой.
      */
     public static String getStatsHeader() {
-        return "InitialCapital; NetProfit(%); MaxSysDD(%); ProfitFactor; AvgProfit(%); TradesCount";
+        return "InitialCapital; NetProfit(%); MaxSysDD(%); ProfitFactor; AvgProfit(%); TradesCount; Funding";
     }
 
     /**
@@ -171,6 +186,22 @@ public class Tester {
         appendOrder(orders, t, security, volume, price, commission.getCommission(volume, security, price), comment);
     }
 
+    /**
+     * Добавить информацию о фандинге в ряд заявок.
+     * Соглашение: если в заявке нулевой объём volume, то это информация о фандинге, который записывается в поле price.
+     *
+     * @param orders         ряд заявок
+     * @param t              метка времени
+     * @param security       код инструмента
+     * @param fundingPerUnit размер фандинга в расчёте на один контракт
+     */
+    public static void appendFunding(final Series orders,
+                                     final long t,
+                                     final String security,
+                                     final double fundingPerUnit) {
+        appendOrder(orders, t, security, 0, fundingPerUnit, 0, "Funding");
+    }
+
     public static void writeEquity(final Series equity, final String fileName) throws IOException {
         try (final PrintStream ps = new PrintStream(fileName, StandardCharsets.UTF_8)) {
             new CsvWriter()
@@ -194,7 +225,7 @@ public class Tester {
         try (final PrintStream ps = new PrintStream(fileName, StandardCharsets.UTF_8)) {
             new CsvWriter()
                     .locale(Locale.getDefault())
-                    .header("Date;Time;Equity,%;CapitalUsed,%")
+                    .header("Date;Time;Equity,%;Funding,%;CapitalUsed,%")
                     .separator(";")
                     .column(equity.getLongColumn("T"), t -> String.format("%02d.%02d.%04d",
                             TimeCodes.day(t),
@@ -205,6 +236,7 @@ public class Tester {
                             TimeCodes.min(t),
                             TimeCodes.sec(t)))
                     .column(equity.getDoubleColumn(EQUITY), "%.4f")
+                    .column(equity.getDoubleColumn(FUNDING), "%.4f")
                     .column(equity.getDoubleColumn(CAPITAL_USED), "%.4f")
                     .write(ps, 0, equity.length());
         }
@@ -242,7 +274,7 @@ public class Tester {
     /**
      * Добавить заявки на покупку/продажу.
      *
-     * @param newOrders объект типа {@link Series} с колонками, заданными в методе {@link #newOrders()}.
+     * @param newOrders объект типа {@link FinSeries} с колонками, заданными в методе {@link #newOrders()}.
      */
     public void addOrders(final FinSeries newOrders) {
         final int len2 = newOrders.length();
@@ -325,8 +357,10 @@ public class Tester {
         maxSysDrawDownPercent = 0;
         ordersIndex = 0;
         doneTradesProfit = 0;
+        doneTradesFunding = 0;
         turnover = 0;
         totalCommission = 0;
+        totalFunding = 0;
         while (synchronizer.synchronize() != Long.MAX_VALUE) {
             processOrders();
             processSeries();
@@ -334,89 +368,108 @@ public class Tester {
     }
 
     /**
-     * @return пустой временной ряд с колонками {@link FinSeries#T}, {@link #EQUITY}, {@link #CAPITAL_USED}.
+     * @return пустой временной ряд с колонками
+     * {@link FinSeries#T}, {@link #EQUITY}, {@link #FUNDING}, {@link #CAPITAL_USED}
      */
     public static FinSeries newEquityAndCapitalUsed() {
-        return new FinSeries().withLongColumn(FinSeries.T).withDoubleColumn(EQUITY).withDoubleColumn(CAPITAL_USED);
+        return new FinSeries()
+                .withLongColumn(FinSeries.T)
+                .withDoubleColumn(EQUITY)
+                .withDoubleColumn(FUNDING)
+                .withDoubleColumn(CAPITAL_USED);
     }
 
     /**
-     * @return временной ряд с колонками {@link #EQUITY}, {@link #CAPITAL_USED}.
+     * @return временной ряд с колонками {@link FinSeries#T}, {@link #EQUITY}, {@link #FUNDING}, {@link #CAPITAL_USED}
      */
     public FinSeries getEquityAndCapitalUsed() {
         return equityAndCapitalUsed.copy();
     }
 
     /**
-     * @return временной ряд с колонками {@link #EQUITY}, {@link #CAPITAL_USED} на закрытие дня.
+     * @return временной ряд с колонками {@link FinSeries#T}, {@link #EQUITY}, {@link #FUNDING}, {@link #CAPITAL_USED}
+     * на закрытие дня
      */
     public FinSeries getEquityAndCapitalUsedDaily() {
         final int len = equityAndCapitalUsed.length();
         final LongColumn t = equityAndCapitalUsed.timeCode();
         final DoubleColumn e = equityAndCapitalUsed.getDoubleColumn(EQUITY);
+        final DoubleColumn f = equityAndCapitalUsed.getDoubleColumn(FUNDING);
         final DoubleColumn c = equityAndCapitalUsed.getDoubleColumn(CAPITAL_USED);
         final FinSeries equityDaily = equityAndCapitalUsed.copy(0, 0);
         final LongColumn tDaily = equityDaily.timeCode();
         final DoubleColumn eDaily = equityDaily.getDoubleColumn(EQUITY);
+        final DoubleColumn fDaily = equityDaily.getDoubleColumn(FUNDING);
         final DoubleColumn cDaily = equityDaily.getDoubleColumn(CAPITAL_USED);
         for (int index = 0; index < len - 1; index++) {
             if (TimeCodes.yyyymmdd(t.get(index)) != TimeCodes.yyyymmdd(t.get(index + 1))) {
                 tDaily.append(t.get(index));
                 eDaily.append(e.get(index));
+                fDaily.append(f.get(index));
                 cDaily.append(c.get(index));
             }
         }
-        tDaily.append(t.get(t.length() - 1));
-        eDaily.append(e.get(t.length() - 1));
-        cDaily.append(c.get(t.length() - 1));
+        tDaily.append(t.getLast());
+        eDaily.append(e.getLast());
+        fDaily.append(f.getLast());
+        cDaily.append(c.getLast());
         return equityDaily;
     }
 
     /**
-     * @return временной ряд с колонками {@link #EQUITY}, {@link #CAPITAL_USED} по часам.
+     * @return временной ряд с колонками {@link FinSeries#T}, {@link #EQUITY}, {@link #FUNDING}, {@link #CAPITAL_USED}
+     * по часам
      */
     public FinSeries getEquityAndCapitalUsedHourly() {
         final int len = equityAndCapitalUsed.length();
         final LongColumn t = equityAndCapitalUsed.timeCode();
         final DoubleColumn e = equityAndCapitalUsed.getDoubleColumn(EQUITY);
+        final DoubleColumn f = equityAndCapitalUsed.getDoubleColumn(FUNDING);
         final DoubleColumn c = equityAndCapitalUsed.getDoubleColumn(CAPITAL_USED);
         final FinSeries equityHourly = equityAndCapitalUsed.copy(0, 0);
         final LongColumn tHourly = equityHourly.timeCode();
         final DoubleColumn eHourly = equityHourly.getDoubleColumn(EQUITY);
+        final DoubleColumn fHourly = equityHourly.getDoubleColumn(FUNDING);
         final DoubleColumn cHourly = equityHourly.getDoubleColumn(CAPITAL_USED);
         for (int index = 0; index < len - 1; index++) {
             if (TimeCodes.hour(t.get(index)) != TimeCodes.hour(t.get(index + 1))
                     || TimeCodes.yyyymmdd(t.get(index)) != TimeCodes.yyyymmdd(t.get(index + 1))) {
                 tHourly.append(t.get(index));
                 eHourly.append(e.get(index));
+                fHourly.append(f.get(index));
                 cHourly.append(c.get(index));
             }
         }
-        tHourly.append(t.get(t.length() - 1));
-        eHourly.append(e.get(t.length() - 1));
-        cHourly.append(c.get(t.length() - 1));
+        tHourly.append(t.getLast());
+        eHourly.append(e.getLast());
+        fHourly.append(f.getLast());
+        cHourly.append(c.getLast());
         return equityHourly;
     }
 
     /**
-     * Выполнить пересчёт эквити и использованного капитала в проценты к заданному капиталу.
+     * Выполнить пересчёт эквити и использованного капитала в проценты к заданному капиталу
      *
-     * @param equitySeries временной ряд с {@link #EQUITY}, {@link #CAPITAL_USED}, выраженными в единицах капитала
+     * @param equitySeries временной ряд с колонками
+     * {@link FinSeries#T}, {@link #EQUITY}, {@link #FUNDING}, {@link #CAPITAL_USED}, выраженными в единицах капитала
      * @param capital      размер капитала, в процентах к которому нужно сделать пересчёт
      */
     private static void makeEquityAndCapitalUsedPercent(final Series equitySeries, final double capital) {
         final int len = equitySeries.length();
         final DoubleColumn equityColumn = equitySeries.getDoubleColumn(EQUITY);
+        final DoubleColumn fundingColumn = equitySeries.getDoubleColumn(FUNDING);
         final DoubleColumn capitalColumn = equitySeries.getDoubleColumn(CAPITAL_USED);
         for (int i = 0; i < len; i++) {
             equityColumn.set(i, equityColumn.get(i) / capital * 100.0);
+            fundingColumn.set(i, fundingColumn.get(i) / capital * 100.0);
             capitalColumn.set(i, capitalColumn.get(i) / capital * 100.0);
         }
     }
 
     /**
      * @param capital капитал
-     * @return временной ряд с колонками {@link #EQUITY}, {@link #CAPITAL_USED} в процентах к указанному капиталу.
+     * @return временной ряд с колонками {@link FinSeries#T}, {@link #EQUITY}, {@link #FUNDING}, {@link #CAPITAL_USED}
+     * в процентах к указанному капиталу
      */
     public FinSeries getEquityAndCapitalUsedPercent(final double capital) {
         final FinSeries equitySeries = equityAndCapitalUsed.copy();
@@ -426,8 +479,8 @@ public class Tester {
 
     /**
      * @param capital капитал
-     * @return временной ряд с колонками {@link #EQUITY}, {@link #CAPITAL_USED} в процентах к указанному капиталу
-     * на конец дня.
+     * @return временной ряд с колонками {@link FinSeries#T}, {@link #EQUITY}, {@link #FUNDING}, {@link #CAPITAL_USED}
+     * в процентах к указанному капиталу на конец дня
      */
     public FinSeries getEquityAndCapitalUsedDailyPercent(final double capital) {
         final FinSeries equitySeries = getEquityAndCapitalUsedDaily();
@@ -437,8 +490,8 @@ public class Tester {
 
     /**
      * @param capital капитал
-     * @return временной ряд с колонками {@link #EQUITY}, {@link #CAPITAL_USED} в процентах к указанному капиталу
-     * по часам.
+     * @return временной ряд с колонками {@link FinSeries#T}, {@link #EQUITY}, {@link #FUNDING}, {@link #CAPITAL_USED}
+     * в процентах к указанному капиталу по часам
      */
     public FinSeries getEquityAndCapitalUsedHourlyPercent(final double capital) {
         final FinSeries equitySeries = getEquityAndCapitalUsedHourly();
@@ -450,35 +503,38 @@ public class Tester {
      * Дописать информацию об эквити и использованном капитале из источника в приёмник.
      * Предполагается, что последняя метка времени в приёмнике предшествует первой метке времени в источнике.
      *
-     * @param src источник: временной ряд с колонками {@link FinSeries#T}, {@link #EQUITY}, {@link #CAPITAL_USED}
-     * @param dst приёмник: временной ряд с колонками {@link FinSeries#T}, {@link #EQUITY}, {@link #CAPITAL_USED}
+     * @param src источник: временной ряд с колонками {@link FinSeries#T}, {@link #EQUITY}, {@link #FUNDING}, {@link #CAPITAL_USED}
+     * @param dst приёмник: временной ряд с колонками {@link FinSeries#T}, {@link #EQUITY}, {@link #FUNDING}, {@link #CAPITAL_USED}
      */
     public static void appendEquity(final FinSeries src, final FinSeries dst) {
         final LongColumn dstTimeCode = dst.timeCode();
         final DoubleColumn dstEquity = dst.getDoubleColumn(EQUITY);
+        final DoubleColumn dstFunding = dst.getDoubleColumn(FUNDING);
         final DoubleColumn dstCapital = dst.getDoubleColumn(CAPITAL_USED);
         final double offsetEquity = (dstEquity.length() == 0) ? 0 : dstEquity.getLast();
 
         final LongColumn srcTimeCode = src.timeCode();
         final DoubleColumn srcEquity = src.getDoubleColumn(EQUITY);
+        final DoubleColumn srcFunding = src.getDoubleColumn(FUNDING);
         final DoubleColumn srcCapital = src.getDoubleColumn(CAPITAL_USED);
 
         for (int i = 0; i < srcTimeCode.length(); i++) {
             dstTimeCode.append(srcTimeCode.get(i));
             dstEquity.append(offsetEquity + srcEquity.get(i));
+            dstFunding.append(offsetEquity + srcFunding.get(i));
             dstCapital.append(srcCapital.get(i));
         }
     }
 
     /**
-     * @return список всех ордеров (копия).
+     * @return список всех ордеров (копия)
      */
     public FinSeries getOrders() {
         return orders.copy();
     }
 
     /**
-     * @return список сделок.
+     * @return список сделок
      */
     public List<TestTrade> getTrades() {
         final List<TestTrade> trades = new ArrayList<>();
@@ -495,7 +551,7 @@ public class Tester {
     }
 
     /**
-     * @return список завершённых сделок.
+     * @return список завершённых сделок
      */
     public List<TestTrade> getDoneTrades() {
         return doneTrades;
@@ -504,17 +560,24 @@ public class Tester {
     private void processOrders() {
         final int len = orders.length();
         while (ordersIndex < len && orders.timeCode().get(ordersIndex) <= synchronizer.t()) {
-            processOrder(ordersTimeCode.get(ordersIndex),
-                    ordersSecurity.get(ordersIndex),
-                    ordersVolume.get(ordersIndex),
-                    ordersPrice.get(ordersIndex),
-                    ordersCommission.get(ordersIndex),
-                    ordersComment.get(ordersIndex));
+            final long volume = ordersVolume.get(ordersIndex);
+            if (volume == 0) {
+                processFunding(ordersSecurity.get(ordersIndex),
+                        ordersPrice.get(ordersIndex), // в этом случае это размер фандинга на один контракт
+                        ordersComment.get(ordersIndex));
+            } else {
+                processOrder(ordersTimeCode.get(ordersIndex),
+                        ordersSecurity.get(ordersIndex),
+                        ordersVolume.get(ordersIndex),
+                        ordersPrice.get(ordersIndex),
+                        ordersCommission.get(ordersIndex),
+                        ordersComment.get(ordersIndex));
+            }
             ordersIndex++;
         }
     }
 
-    private void processOrder(final long timeCode,
+    private void processOrder(final long t,
                               final String security,
                               final long volume,
                               final double price,
@@ -522,8 +585,8 @@ public class Tester {
                               final String comment) {
         int tradeId = -1;
         for (int i = 0; i < activeTrades.size(); i++) {
-            final TestTrade t = activeTrades.get(i);
-            if (t.security.equals(security)) {
+            final TestTrade trade = activeTrades.get(i);
+            if (trade.security.equals(security)) {
                 tradeId = i;
                 break;
             }
@@ -532,7 +595,7 @@ public class Tester {
         totalCommission += commission;
         if (tradeId == -1) {
             final FinSeries s = securitiesMap.get(security);
-            activeTrades.add(new TestTrade(timeCode, security, volume, price, commission,
+            activeTrades.add(new TestTrade(t, security, volume, price, commission,
                     s.timeCode(), s.close()));
         } else {
             final TestTrade trade = activeTrades.get(tradeId);
@@ -542,30 +605,43 @@ public class Tester {
                 newVolume = 0;
             }
             if (newVolume == 0) {
-                trade.update(timeCode, -oldVolume, price, commission);
+                trade.update(t, -oldVolume, price, commission);
                 activeTrades.remove(tradeId);
                 doneTrades.add(trade);
                 doneTradesProfit += trade.getEquity(price);
+                doneTradesFunding += trade.getFunding();
             } else if (oldVolume * newVolume > 0) {
-                trade.update(timeCode, volume, price, commission);
+                trade.update(t, volume, price, commission);
             } else {
                 final double absVolume = Math.abs(volume);
                 final double k1 = Math.abs(oldVolume) / absVolume;
                 final double k2 = Math.abs(newVolume) / absVolume;
                 final double commission1 = k1 * commission;
                 final double commission2 = k2 * commission;
-                trade.update(timeCode, -oldVolume, price, commission1);
+                trade.update(t, -oldVolume, price, commission1);
                 activeTrades.remove(tradeId);
                 doneTrades.add(trade);
                 doneTradesProfit += trade.getEquity(price);
-                activeTrades.add(new TestTrade(timeCode, security, newVolume, price, commission2,
+                doneTradesFunding += trade.getFunding();
+                activeTrades.add(new TestTrade(t, security, newVolume, price, commission2,
                         trade.timeCodeColumn, trade.closeColumn));
+            }
+        }
+    }
+
+    private void processFunding(final String security,
+                                final double fundingPerUnit,
+                                final String comment) {
+        for (final TestTrade trade : activeTrades) {
+            if (trade.security.equals(security)) {
+                totalFunding += trade.update(fundingPerUnit);
             }
         }
     }
 
     private void processSeries() {
         double sumEquity = doneTradesProfit;
+        double sumFunding = doneTradesFunding;
         double sumCapitalUsed = 0;
         final long t = synchronizer.t();
         for (final TestTrade trade : activeTrades) {
@@ -576,10 +652,12 @@ public class Tester {
                 trade.tLast = t;
             }
             sumEquity += trade.getEquity(trade.last);
+            sumFunding += trade.getFunding();
             sumCapitalUsed += Math.abs(trade.getUsedCapital());
         }
         equityTimeCode.append(t);
         equity.append(sumEquity);
+        funding.append(sumFunding);
         capitalUsed.append(sumCapitalUsed);
         if (sumEquity > maxEquity) {
             maxEquity = sumEquity;
@@ -599,14 +677,14 @@ public class Tester {
     }
 
     /**
-     * @return количество сделок.
+     * @return количество сделок
      */
     public int getTradesCount() {
         return doneTrades.size() + activeTrades.size();
     }
 
     /**
-     * @return доход.
+     * @return доход
      */
     public double getNetProfit() {
         double netProfit = doneTradesProfit;
@@ -617,14 +695,14 @@ public class Tester {
     }
 
     /**
-     * @return доход в процентах на начальный капитал.
+     * @return доход в процентах на начальный капитал
      */
     public double getNetProfitPercent() {
         return getNetProfit() / initialCapital * 100.0;
     }
 
     /**
-     * @return средний доход на сделку в процентах.
+     * @return средний доход на сделку в процентах
      */
     public double getAvgProfitPercent() {
         double sum = 0;
@@ -663,29 +741,36 @@ public class Tester {
     }
 
     /**
-     * @return максимальная просадка в процентах.
+     * @return максимальная просадка в процентах
      */
     public double getMaxSysDrawDownPercent() {
         return maxSysDrawDownPercent;
     }
 
     /**
-     * @return оборот.
+     * @return оборот
      */
     public double getTurnover() {
         return turnover;
     }
 
     /**
-     * @return суммарная комиссия.
+     * @return суммарная комиссия
      */
     public double getTotalCommission() {
         return totalCommission;
     }
 
     /**
-     * @param condition условие.
-     * @return количество сделок, удовлетворяющих условию.
+     * @return суммарный фандинг
+     */
+    public double getTotalFunding() {
+        return totalFunding;
+    }
+
+    /**
+     * @param condition условие
+     * @return количество сделок, удовлетворяющих условию
      */
     public int getTradesCount(final Predicate<TestTrade> condition) {
         int count = 0;
@@ -703,35 +788,35 @@ public class Tester {
     }
 
     /**
-     * @return количество длинных сделок.
+     * @return количество длинных сделок
      */
     public int getLongTradesCount() {
         return getTradesCount(TestTrade::isLong);
     }
 
     /**
-     * @return количество коротких.
+     * @return количество коротких сделок
      */
     public int getShortTradesCount() {
         return getTradesCount(TestTrade::isShort);
     }
 
     /**
-     * @return количество прибыльных сделок.
+     * @return количество прибыльных сделок
      */
     public int getWinningTradesCount() {
         return getTradesCount(trade -> (trade.getProfit() > 0));
     }
 
     /**
-     * @return количество убыточных сделок.
+     * @return количество убыточных сделок
      */
     public int getLosingTradesCount() {
         return getTradesCount(trade -> (trade.getProfit() <= 0));
     }
 
     /**
-     * @return массив строк, содержащих отчёт тестера.
+     * @return массив строк, содержащих отчёт тестера
      */
     public String[] getSummary() {
         final int tc = getTradesCount();
@@ -752,7 +837,8 @@ public class Tester {
                 String.format(Locale.US, "Long    Trades : %d (%.2f%%)", longTradesCount, 100.0 * longTradesCount / tc),
                 String.format(Locale.US, "Short   Trades : %d (%.2f%%)", shortTradesCount, 100.0 * shortTradesCount / tc),
                 String.format(Locale.US, "Turnover       : %.2f (%.2f x initial capital)", getTurnover(), getTurnover() / initialCapital),
-                String.format(Locale.US, "Commission paid: %.2f (%.2f%% of initial capital)", getTotalCommission(), getTotalCommission() / initialCapital * 100.0)
+                String.format(Locale.US, "Commission paid: %.2f (%.2f%% of initial capital)", getTotalCommission(), getTotalCommission() / initialCapital * 100.0),
+                String.format(Locale.US, "Funding    paid: %.2f (%.2f%% of initial capital)", getTotalFunding(), getTotalFunding() / initialCapital * 100.0)
         };
     }
 
@@ -775,16 +861,17 @@ public class Tester {
     }
 
     /**
-     * @return строка с базовой статистикой.
+     * @return строка с базовой статистикой
      */
     public String getStatsValues() {
-        return String.format(Locale.US, "%s; %.2f; %.2f; %.2f; %.2f; %d",
+        return String.format(Locale.US, "%s; %.2f; %.2f; %.2f; %.2f; %d; %.2f",
                 initialCapital,
                 getNetProfitPercent(),
                 getMaxSysDrawDownPercent(),
                 getProfitFactor(),
                 getAvgProfitPercent(),
-                getTradesCount());
+                getTradesCount(),
+                getTotalFunding());
     }
 
     public enum DrawdownMode {

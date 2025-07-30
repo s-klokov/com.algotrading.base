@@ -60,6 +60,10 @@ public class TestTrade {
      */
     public double commission;
     /**
+     * Размер фандинга. При вычислении эквити учитывается со знаком минус.
+     */
+    public double funding;
+    /**
      * Колонка с временными метками.
      */
     final LongColumn timeCodeColumn;
@@ -75,6 +79,8 @@ public class TestTrade {
      * @param size       размер позиции
      * @param price      цена входа
      * @param commission комиссия
+     * @param timeCodeColumn колонка с метками времени
+     * @param closeColumn колонка с ценами закрытия
      */
     TestTrade(final long t, final String security, final double size, final double price, final double commission,
               final LongColumn timeCodeColumn, final DoubleColumn closeColumn) {
@@ -91,18 +97,19 @@ public class TestTrade {
         last = price;
         tLast = t;
         this.commission = commission;
+        funding = 0;
         this.timeCodeColumn = timeCodeColumn;
         this.closeColumn = closeColumn;
     }
 
     public static String header() {
-        return "Security;Trade;Date;Price;Ex.Date;Ex.Price;Profit;%Profit;Volume;Value;#bars;commission";
+        return "Security;Trade;Date;Price;Ex.Date;Ex.Price;Profit;%Profit;Volume;Value;#bars;commission;funding";
     }
 
     /**
      * Изменить трейд.
      *
-     * @param t   время изменения трейда
+     * @param t          время изменения трейда
      * @param delta      приращение позиции
      * @param price      цена исполнения
      * @param commission комиссия
@@ -135,28 +142,40 @@ public class TestTrade {
     }
 
     /**
-     * @return true, если это длинный трейд.
+     * Учесть фандинг.
+     *
+     * @param fundingPerUnit величина фандинга в расчёте на контракт
+     * @return величина фандинга в расчёте на текущий размер трейда
+     */
+    double update(final double fundingPerUnit) {
+        final double tradeFunding = fundingPerUnit * (scaleInVolume - scaleOutVolume);
+        funding += tradeFunding;
+        return tradeFunding;
+    }
+
+    /**
+     * @return true, если это длинный трейд
      */
     public boolean isLong() {
         return scaleInVolume > EPS;
     }
 
     /**
-     * @return true, если это короткий трейд.
+     * @return true, если это короткий трейд
      */
     public boolean isShort() {
         return scaleInVolume < -EPS;
     }
 
     /**
-     * @return текущий размер трейда с учётом знака.
+     * @return текущий размер трейда с учётом знака
      */
     public double getVolume() {
         return scaleInVolume - scaleOutVolume;
     }
 
     /**
-     * @return true, если трейд завершён, false иначе.
+     * @return true, если трейд завершён, false иначе
      */
     public boolean isDone() {
         return Math.abs(getVolume()) <= EPS;
@@ -165,45 +184,52 @@ public class TestTrade {
     /**
      * Оценить equity для трейда.
      *
-     * @param price текущая цена.
-     * @return значение equity для трейда.
+     * @param price текущая цена
+     * @return значение equity для трейда
      */
     public double getEquity(final double price) {
-        return (scaleOutValue - scaleInValue) + (scaleInVolume - scaleOutVolume) * price - commission;
+        return (scaleOutValue - scaleInValue) + (scaleInVolume - scaleOutVolume) * price - commission - funding;
+    }
+
+    /**
+     * @return размер фандинга для трейда
+     */
+    public double getFunding() {
+        return funding;
     }
 
     /**
      * Оценить используемый капитал в трейде.
      *
-     * @return значение используемого капитала в трейде.
+     * @return значение используемого капитала в трейде
      */
     public double getUsedCapital() {
         return scaleInValue - scaleOutValue;
     }
 
     /**
-     * @return средняя цена входа в трейд.
+     * @return средняя цена входа в трейд
      */
     public double getAvgInPrice() {
         return scaleInValue / scaleInVolume;
     }
 
     /**
-     * @return средняя цена выхода из трейда.
+     * @return средняя цена выхода из трейда
      */
     public double getAvgOutPrice() {
         return (scaleOutValue + (scaleInVolume - scaleOutVolume) * last) / scaleInVolume;
     }
 
     /**
-     * @return прибыль/убыток трейда.
+     * @return прибыль/убыток трейда
      */
     public double getProfit() {
         return getEquity(last);
     }
 
     /**
-     * @return прибыль/убыток трейда в процентах.
+     * @return прибыль/убыток трейда в процентах
      */
     public double getProfitPercent() {
         final double pp = getEquity(last) / scaleInValue * 100.0;
@@ -213,7 +239,7 @@ public class TestTrade {
     @Override
     public String toString() {
         return String.format(Locale.US,
-                "Security=%s;Trade=%s%s;Date=%s;Price=%s;Ex.Date=%s;Ex.Price=%s;Profit=%.2f;%%Profit=%.2f%%;Volume=%.1f;Value=%.2f;#bars=%d;commission=%.2f",
+                "Security=%s;Trade=%s%s;Date=%s;Price=%s;Ex.Date=%s;Ex.Price=%s;Profit=%.2f;%%Profit=%.2f%%;Volume=%.1f;Value=%.2f;#bars=%d;commission=%.2f;funding=%.2f",
                 security,
                 isDone() ? "" : "Open ",
                 isLong() ? "Long" : isShort() ? "Short" : "???",
@@ -226,12 +252,13 @@ public class TestTrade {
                 scaleInVolume,
                 scaleInValue,
                 barsInTrade,
-                commission
+                commission,
+                funding
         );
     }
 
     public String toCsvString() {
-        return String.format("%s;%s%s;%s;%s;%s;%s;%.2f;%.2f;%.1f;%.2f;%d;%.2f",
+        return String.format("%s;%s%s;%s;%s;%s;%s;%.2f;%.2f;%.1f;%.2f;%d;%.2f;%.2f",
                 security,
                 isDone() ? "" : "Open ",
                 isLong() ? "Long" : isShort() ? "Short" : "???",
@@ -244,7 +271,8 @@ public class TestTrade {
                 scaleInVolume,
                 scaleInValue,
                 barsInTrade,
-                commission
+                commission,
+                funding
         );
     }
 }
