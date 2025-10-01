@@ -2169,6 +2169,14 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .build()
         );
 
+        addFuturesMap(new FuturesMapBuilder("RB")
+                .put("RGBI-3.25", "RBH5", 20250303, 20250228, 20241202)
+                .put("RGBI-6.25", "RBM5", 20250602, 20250530, 20250303)
+                .put("RGBI-9.25", "RBU5", 20250901, 20250829, 20250602)
+                .put("RGBI-12.25", "RBZ5", 20251201, 20251128, 20250901)
+                .build()
+        );
+
         addFuturesMap(new FuturesMapBuilder("SF")
                 .put("SPYF-6.21", "SFM21", 20210618, 20210617, 20210525)
                 .put("SPYF-9.21", "SFU21", 20210917, 20210916, 20210618)
