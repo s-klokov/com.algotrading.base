@@ -2303,5 +2303,16 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("NASD-3.26", "NAH6", 20260320, 20260319, 20251219)
                 .build()
         );
+
+        addFuturesMap(new FuturesMapBuilder("CC")
+                .put("COCOA-3.25", "CCH25", 20250317, 20250314, 20241216)
+                .put("COCOA-5.25", "CCK25", 20250515, 20250514, 20250317)
+                .put("COCOA-7.25", "CCN25", 20250717, 20250716, 20250515)
+                .put("COCOA-9.25", "CCU25", 20250916, 20250915, 20250717)
+                .put("COCOA-12.25", "CCZ25", 20251216, 20251215, 20250916)
+
+                .put("COCOA-3.26", "CCH6", 20260317, 20260316, 20251216)
+                .build()
+        );
     }
 }
