@@ -1,5 +1,4 @@
 module com.algotrading.base {
-    requires java.logging;
     requires json.simple;
     requires com.simpleutils;
     exports com.algotrading.base.core;
