@@ -85,6 +85,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("RTS-3.26", "RIH6", 20260319, 20260318, 20251218)
                 .put("RTS-6.26", "RIM6", 20260618, 20260617, 20260319)
                 .put("RTS-9.26", "RIU6", 20260917, 20260916, 20260618)
+                .put("RTS-12.26", "RIZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -167,6 +168,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("Si-3.26", "SiH6", 20260319, 20260318, 20251218)
                 .put("Si-6.26", "SiM6", 20260618, 20260617, 20260319)
                 .put("Si-9.26", "SiU6", 20260917, 20260916, 20260618)
+                .put("Si-12.26", "SiZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -249,6 +251,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("Eu-3.26", "EuH6", 20260319, 20260318, 20251218)
                 .put("Eu-6.26", "EuM6", 20260618, 20260617, 20260319)
                 .put("Eu-9.26", "EuU6", 20260917, 20260916, 20260618)
+                .put("Eu-12.26", "EuZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -274,6 +277,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("CNY-3.26", "CRH6", 20260319, 20260318, 20251218)
                 .put("CNY-6.26", "CRM6", 20260618, 20260617, 20260319)
                 .put("CNY-9.26", "CRU6", 20260917, 20260916, 20260618)
+                .put("CNY-12.26", "CRZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -482,6 +486,9 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("BR-7.26", "BRN6", 20260701, 20260630, 20260601)
                 .put("BR-8.26", "BRQ6", 20260803, 20260731, 20260701)
                 .put("BR-9.26", "BRU6", 20260831, 20260828, 20260803)
+                .put("BR-10.26", "BRV6", 20261001, 20260930, 20260831)
+                .put("BR-11.26", "BRX6", 20261102, 20261030, 20261001)
+                .put("BR-12.26", "BRZ6", 20261201, 20261130, 20261102)
                 .build()
         );
 
@@ -572,6 +579,9 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("NG-7.26", "NGN6", 20260729, 20260728, 20260626)
                 .put("NG-8.26", "NGQ6", 20260827, 20260826, 20260729)
                 .put("NG-9.26", "NGU6", 20260928, 20260925, 20260827)
+                .put("NG-10.26", "NGV6", 20261028, 20261027, 20260928)
+                .put("NG-11.26", "NGX6", 20261125, 20261124, 20261028)
+                .put("NG-12.26", "NGZ6", 20261229, 20261228, 20261125)
                 .build()
         );
 
@@ -654,6 +664,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("GOLD-3.26", "GDH6", 20260320, 20260319, 20251219)
                 .put("GOLD-6.26", "GDM6", 20260619, 20260618, 20260320)
                 .put("GOLD-9.26", "GDU6", 20260918, 20260917, 20260619)
+                .put("GOLD-12.26", "GDZ6", 20261218, 20261217, 20260918)
                 .build()
         );
 
@@ -716,6 +727,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("SILV-3.26", "SVH6", 20260320, 20260319, 20251219)
                 .put("SILV-6.26", "SVM6", 20260619, 20260618, 20260320)
                 .put("SILV-9.26", "SVU6", 20260918, 20260917, 20260619)
+                .put("SILV-12.26", "SVZ6", 20261218, 20261217, 20260918)
                 .build()
         );
 
@@ -778,6 +790,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("PLD-3.26", "PDH6", 20260320, 20260319, 20251219)
                 .put("PLD-6.26", "PDM6", 20260619, 20260618, 20260320)
                 .put("PLD-9.26", "PDU6", 20260918, 20260917, 20260619)
+                .put("PLD-12.26", "PDZ6", 20261218, 20261217, 20260918)
                 .build()
         );
 
@@ -840,6 +853,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("PLT-3.26", "PTH6", 20260320, 20260319, 20251219)
                 .put("PLT-6.26", "PTM6", 20260619, 20260618, 20260320)
                 .put("PLT-9.26", "PTU6", 20260918, 20260917, 20260619)
+                .put("PLT-12.26", "PTZ6", 20261218, 20261217, 20260918)
                 .build()
         );
 
@@ -922,6 +936,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("ED-3.26", "EDH6", 20260319, 20260318, 20251218)
                 .put("ED-6.26", "EDM6", 20260618, 20260617, 20260319)
                 .put("ED-9.26", "EDU6", 20260917, 20260916, 20260618)
+                .put("ED-12.26", "EDZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1004,6 +1019,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("SBRF-3.26", "SRH6", 20260319, 20260318, 20251218)
                 .put("SBRF-6.26", "SRM6", 20260618, 20260617, 20260319)
                 .put("SBRF-9.26", "SRU6", 20260917, 20260916, 20260618)
+                .put("SBRF-12.26", "SRZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1086,6 +1102,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("GAZR-3.26", "GZH6", 20260319, 20260318, 20251218)
                 .put("GAZR-6.26", "GZM6", 20260618, 20260617, 20260319)
                 .put("GAZR-9.26", "GZU6", 20260917, 20260916, 20260618)
+                .put("GAZR-12.26", "GZZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1168,6 +1185,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("LKOH-3.26", "LKH6", 20260319, 20260318, 20251218)
                 .put("LKOH-6.26", "LKM6", 20260618, 20260617, 20260319)
                 .put("LKOH-9.26", "LKU6", 20260917, 20260916, 20260618)
+                .put("LKOH-12.26", "LKZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1250,6 +1268,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("VTBR-3.26", "VBH6", 20260319, 20260318, 20251218)
                 .put("VTBR-6.26", "VBM6", 20260618, 20260617, 20260319)
                 .put("VTBR-9.26", "VBU6", 20260917, 20260916, 20260618)
+                .put("VTBR-12.26", "VBZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1332,6 +1351,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("GMKN-3.26", "GKH6", 20260319, 20260318, 20251218)
                 .put("GMKN-6.26", "GKM6", 20260618, 20260617, 20260319)
                 .put("GMKN-9.26", "GKU6", 20260917, 20260916, 20260618)
+                .put("GMKN-12.26", "GKZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1414,6 +1434,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("SBPR-3.26", "SPH6", 20260319, 20260318, 20251218)
                 .put("SBPR-6.26", "SPM6", 20260618, 20260617, 20260319)
                 .put("SBPR-9.26", "SPU6", 20260917, 20260916, 20260618)
+                .put("SBPR-12.26", "SPZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1461,6 +1482,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("AFLT-3.26", "AFH6", 20260319, 20260318, 20251218)
                 .put("AFLT-6.26", "AFM6", 20260618, 20260617, 20260319)
                 .put("AFLT-9.26", "AFU6", 20260917, 20260916, 20260618)
+                .put("AFLT-12.26", "AFZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1493,6 +1515,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("AFKS-3.26", "AKH6", 20260319, 20260318, 20251218)
                 .put("AFKS-6.26", "AKM6", 20260618, 20260617, 20260319)
                 .put("AFKS-9.26", "AKU6", 20260917, 20260916, 20260618)
+                .put("AFKS-12.26", "AKZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1520,6 +1543,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("MTLR-3.26", "MCH6", 20260319, 20260318, 20251218)
                 .put("MTLR-6.26", "MCM6", 20260618, 20260617, 20260319)
                 .put("MTLR-9.26", "MCU6", 20260917, 20260916, 20260618)
+                .put("MTLR-12.26", "MCZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1582,6 +1606,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("MOEX-3.26", "MEH6", 20260319, 20260318, 20251218)
                 .put("MOEX-6.26", "MEM6", 20260618, 20260617, 20260319)
                 .put("MOEX-9.26", "MEU6", 20260917, 20260916, 20260618)
+                .put("MOEX-12.26", "MEZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1644,6 +1669,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("MGNT-3.26", "MNH6", 20260319, 20260318, 20251218)
                 .put("MGNT-6.26", "MNM6", 20260618, 20260617, 20260319)
                 .put("MGNT-9.26", "MNU6", 20260917, 20260916, 20260618)
+                .put("MGNT-12.26", "MNZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1706,6 +1732,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("MTSI-3.26", "MTH6", 20260319, 20260318, 20251218)
                 .put("MTSI-6.26", "MTM6", 20260618, 20260617, 20260319)
                 .put("MTSI-9.26", "MTU6", 20260917, 20260916, 20260618)
+                .put("MTSI-12.26", "MTZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1768,6 +1795,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("NOTK-3.26", "NKH6", 20260319, 20260318, 20251218)
                 .put("NOTK-6.26", "NKM6", 20260618, 20260617, 20260319)
                 .put("NOTK-9.26", "NKU6", 20260917, 20260916, 20260618)
+                .put("NOTK-12.26", "NKZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1825,6 +1853,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("NLMK-3.26", "NMH6", 20260319, 20260318, 20251218)
                 .put("NLMK-6.26", "NMM6", 20260618, 20260617, 20260319)
                 .put("NLMK-9.26", "NMU6", 20260917, 20260916, 20260618)
+                .put("NLMK-12.26", "NMZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1862,6 +1891,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("PLZLM-3.26", "PXH6", 20260319, 20260318, 20251218)
                 .put("PLZLM-6.26", "PXM6", 20260618, 20260617, 20260319)
                 .put("PLZLM-9.26", "PXU6", 20260917, 20260916, 20260618)
+                .put("PLZLM-12.26", "PXZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1924,6 +1954,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("ROSN-3.26", "RNH6", 20260319, 20260318, 20251218)
                 .put("ROSN-6.26", "RNM6", 20260618, 20260617, 20260319)
                 .put("ROSN-9.26", "RNU6", 20260917, 20260916, 20260618)
+                .put("ROSN-12.26", "RNZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -1951,6 +1982,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("RUAL-3.26", "RLH6", 20260319, 20260318, 20251218)
                 .put("RUAL-6.26", "RLM6", 20260618, 20260617, 20260319)
                 .put("RUAL-9.26", "RLU6", 20260917, 20260916, 20260618)
+                .put("RUAL-12.26", "RLZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -2013,6 +2045,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("SNGP-3.26", "SGH6", 20260319, 20260318, 20251218)
                 .put("SNGP-6.26", "SGM6", 20260618, 20260617, 20260319)
                 .put("SNGP-9.26", "SGU6", 20260917, 20260916, 20260618)
+                .put("SNGP-12.26", "SGZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -2075,6 +2108,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("SNGR-3.26", "SNH6", 20260319, 20260318, 20251218)
                 .put("SNGR-6.26", "SNM6", 20260618, 20260617, 20260319)
                 .put("SNGR-9.26", "SNU6", 20260917, 20260916, 20260618)
+                .put("SNGR-12.26", "SNZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -2102,6 +2136,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("SMLT-3.26", "SSH6", 20260319, 20260318, 20251218)
                 .put("SMLT-6.26", "SSM6", 20260618, 20260617, 20260319)
                 .put("SMLT-9.26", "SSU6", 20260917, 20260916, 20260618)
+                .put("SMLT-12.26", "SSZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -2164,6 +2199,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("TATN-3.26", "TTH6", 20260319, 20260318, 20251218)
                 .put("TATN-6.26", "TTM6", 20260618, 20260617, 20260319)
                 .put("TATN-9.26", "TTU6", 20260917, 20260916, 20260618)
+                .put("TATN-12.26", "TTZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -2196,6 +2232,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("T-3.26", "TBH6", 20260319, 20260318, 20251218)
                 .put("T-6.26", "TBM6", 20260618, 20260617, 20260319)
                 .put("T-9.26", "TBU6", 20260917, 20260916, 20260618)
+                .put("T-12.26", "TBZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -2213,6 +2250,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("VKCO-3.26", "VKH6", 20260319, 20260318, 20251218)
                 .put("VKCO-6.26", "VKM6", 20260618, 20260617, 20260319)
                 .put("VKCO-9.26", "VKU6", 20260917, 20260916, 20260618)
+                .put("VKCO-12.26", "VKZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -2245,6 +2283,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("YDEX-3.26", "YDH6", 20260319, 20260318, 20251218)
                 .put("YDEX-6.26", "YDM6", 20260618, 20260617, 20260319)
                 .put("YDEX-9.26", "YDU6", 20260917, 20260916, 20260618)
+                .put("YDEX-12.26", "YDZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -2322,6 +2361,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("MIX-3.26", "MXH6", 20260319, 20260318, 20251218)
                 .put("MIX-6.26", "MXM6", 20260618, 20260617, 20260319)
                 .put("MIX-9.26", "MXU6", 20260917, 20260916, 20260618)
+                .put("MIX-12.26", "MXZ6", 20261217, 20261216, 20260917)
                 .build()
         );
 
@@ -2334,6 +2374,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("RGBI-3.26", "RBH6", 20260302, 20260227, 20251201)
                 .put("RGBI-6.26", "RBM6", 20260601, 20260529, 20260302)
                 .put("RGBI-9.26", "RBU6", 20260901, 20260831, 20260601)
+                .put("RGBI-12.26", "RBZ6", 20261201, 20261130, 20260901)
                 .build()
         );
 
@@ -2365,6 +2406,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("SPYF-3.26", "SFH6", 20260320, 20260319, 20251219)
                 .put("SPYF-6.26", "SFM6", 20260619, 20260618, 20260320)
                 .put("SPYF-9.26", "SFU6", 20260918, 20260917, 20260619)
+                .put("SPYF-12.26", "SFZ6", 20261218, 20261217, 20260918)
                 .build()
         );
 
@@ -2387,6 +2429,7 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("NASD-3.26", "NAH6", 20260320, 20260319, 20251219)
                 .put("NASD-6.26", "NAM6", 20260619, 20260618, 20260320)
                 .put("NASD-9.26", "NAU6", 20260918, 20260917, 20260619)
+                .put("NASD-12.26", "NAZ6", 20261218, 20261217, 20260918)
                 .build()
         );
 
@@ -2401,6 +2444,9 @@ public final class MoexFuturesExchange extends FuturesExchange {
                 .put("COCOA-4.26", "CCJ6", 20260424, 20260423, 20260317)
                 .put("COCOA-6.26", "CCM6", 20260624, 20260623, 20260424)
                 .put("COCOA-8.26", "CCQ6", 20260825, 20260824, 20260624)
+                .put("COCOA-11.26", "CCX6", 20261123, 20261120, 20260825)
+
+                .put("COCOA-2.27", "CCG7", 20270222, 20270219, 20261123)
                 .build()
         );
     }
